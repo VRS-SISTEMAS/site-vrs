@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "entrada.py",
+      "src": "index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "(.*)",
-      "dest": "entrada.py"
+      "dest": "index.py"
     }
   ]
 }
