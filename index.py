@@ -2,8 +2,8 @@ import os
 import sys
 from streamlit.web import cli as stcli
 
-# Garante que o entrada.py seja o ponto de partida da VR Soluções
 def main():
+    # Isso aqui avisa que o entrada.py é o coração do site
     sys.argv = [
         "streamlit",
         "run",
