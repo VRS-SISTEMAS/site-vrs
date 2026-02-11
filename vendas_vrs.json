@@ -1,0 +1,89 @@
+[
+    {
+        "data": "10/02/2026 23:36:12",
+        "cliente": "",
+        "plano": "BÁSICO",
+        "status": "Pago"
+    },
+    {
+        "data": "10/02/2026 23:37:10",
+        "cliente": "Vitor Ribeiro",
+        "plano": "BÁSICO",
+        "status": "Pago"
+    },
+    {
+        "data": "10/02/2026 23:37:49",
+        "cliente": "",
+        "plano": "JÚNIOR 🚀",
+        "status": "Pago"
+    },
+    {
+        "data": "10/02/2026 23:42:48",
+        "cliente": "Vitor Ribeiro",
+        "plano": "BÁSICO",
+        "status": "Pago"
+    },
+    {
+        "data": "10/02/2026 23:54:50",
+        "cliente": "Vitor Ribeiro",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "BÁSICO",
+        "status": "Pago"
+    },
+    {
+        "data": "10/02/2026 23:57:21",
+        "cliente": "Vitor Ribeiro",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "JÚNIOR 🚀",
+        "status": "Pago"
+    },
+    {
+        "data": "11/02/2026 00:37:30",
+        "cliente": "Marcos teste",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "SÊNIOR 💎",
+        "status": "Aguardando"
+    },
+    {
+        "data": "11/02/2026 00:43:09",
+        "cliente": "Marcos Freitas",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "JÚNIOR 🚀",
+        "status": "Aguardando"
+    },
+    {
+        "data": "11/02/2026 00:50:15",
+        "cliente": "Marcos Freitas",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "JÚNIOR 🚀",
+        "status": "Aguardando"
+    },
+    {
+        "data": "11/02/2026 00:51:11",
+        "cliente": "Marcos Freitas",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "JÚNIOR 🚀",
+        "status": "Aguardando"
+    },
+    {
+        "data": "11/02/2026 00:51:15",
+        "cliente": "Marcos Freitas",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "JÚNIOR 🚀",
+        "status": "Aguardando"
+    },
+    {
+        "data": "11/02/2026 01:02:28",
+        "cliente": "vitor ribeiro",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "SÊNIOR 💎",
+        "status": "Aguardando"
+    },
+    {
+        "data": "11/02/2026 01:07:59",
+        "cliente": "Marcos Freitas",
+        "email": "vrsolucoes.sistems@gmail.com",
+        "plano": "BÁSICO",
+        "status": "Aguardando"
+    }
+]
