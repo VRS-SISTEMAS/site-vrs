@@ -1,154 +1,46 @@
-# =================================================================
-# NOME DO SISTEMA: VR SOLUÇÕES Sistemas
-# MÓDULO: entrada.py (Versão 3D Destravada)
-# =================================================================
 import streamlit as st
 import botoes
-import escritorio 
-import os
 
-# Configuração de página
-st.set_page_config(layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(layout="wide", page_title="VR Soluções - Ativação Elite")
 botoes.aplicar_estetica_vrs()
 
-# --- ESTILIZAÇÃO DE ELITE (CSS 3D FLIP COM DESTRAVE DE CLIQUE) ---
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap');
-    .stApp { background-color: #050a0e; }
-    
-    .vrs-logo-main {
-        font-family: 'Orbitron', sans-serif;
-        background: linear-gradient(180deg, #FFFFFF 0%, #A9A9A9 50%, #4F4F4F 100%);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        font-size: 72px; font-weight: 900; text-align: center;
-        margin-top: -50px;
-    }
+st.markdown("<h1 style='text-align:center; font-family:Orbitron;'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; color:#00e5ff;'>GESTÃO DE FROTAS E MANUTENÇÃO</p>", unsafe_allow_html=True)
 
-    /* CONTAINER DO CARD 3D - Ajustado para não bloquear o botão */
-    .flip-card {
-        background-color: transparent;
-        width: 100%;
-        height: 380px; /* Reduzi um pouco para dar ar ao botão */
-        perspective: 1000px;
-        margin-bottom: 10px;
-        position: relative;
-        z-index: 1;
-    }
+# Estrutura baseada no que funcionava (image_ed460c.png)
+st.markdown("### 👤 Passo 1: Seus Dados")
+col1, col2 = st.columns(2)
+with col1:
+    nome = st.text_input("Nome Completo ou Razão Social:")
+    tipo_doc = st.radio("Documento Principal:", ["CPF", "CNPJ"], horizontal=True)
+with col2:
+    doc = st.text_input(f"Digite seu {tipo_doc}:")
+    whatsapp = st.text_input("WhatsApp com DDD:")
 
-    .flip-card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        text-align: center;
-        transition: transform 0.8s;
-        transform-style: preserve-3d;
-    }
+st.markdown("### 🚀 Passo 2: Escolha seu Plano")
+# Valores corrigidos: 50, 100 e 500 veículos (image_e33320.png)
+plano_escolhido = st.radio(
+    "Selecione o limite de frota desejado:",
+    ["BÁSICO (50 Veículos) - R$ 99,99", 
+     "JÚNIOR (100 Veículos) - R$ 139,99", 
+     "SÊNIOR (500 Veículos) - R$ 299,99"],
+    horizontal=True
+)
 
-    .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+st.markdown("### 🔑 Passo 3: Identificação do PC")
+id_maquina = st.text_input("ID da Máquina (exibido no instalador):", placeholder="Ex: B32163D3")
 
-    .flip-card-front, .flip-card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        -webkit-backface-visibility: hidden;
-        backface-visibility: hidden;
-        border-radius: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 30px;
-        border: 1px solid rgba(0, 229, 255, 0.2);
-    }
+st.markdown("### 💰 Passo 4: Pagamento")
+forma_pagto = st.radio("Forma de pagamento:", ["Pix (Ativação Automática ⚡)", "Cartão / Boleto"], horizontal=True)
 
-    .flip-card-front { background: rgba(16, 24, 32, 0.9); color: white; }
+st.write("---")
 
-    .flip-card-back {
-        background: linear-gradient(145deg, #0b1622, #101820);
-        color: #00FF7F;
-        transform: rotateY(180deg);
-        border: 1px solid #00FF7F;
-    }
-
-    .list-features {
-        text-align: left;
-        font-size: 16px;
-        line-height: 1.4;
-        color: #FFFFFF;
-        list-style-type: '⚡ ';
-    }
-
-    /* GARANTE QUE O BOTÃO FIQUE POR CIMA DE TUDO */
-    .stButton {
-        position: relative;
-        z-index: 10 !important;
-    }
-
-    .checkout-box {
-        background: rgba(16, 24, 32, 0.9);
-        border: 1px solid rgba(0, 229, 255, 0.3);
-        border-radius: 20px;
-        padding: 50px;
-        max-width: 800px;
-        margin: 0 auto;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-if 'etapa' not in st.session_state: st.session_state['etapa'] = 1
-
-# --- ETAPA 1: VITRINE ---
-if st.session_state['etapa'] == 1:
-    st.markdown("<div class='vrs-logo-main'>VRS SOLUÇÕES</div>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#00e5ff; text-align:center; letter-spacing:8px;'>SISTEMAS ELITE</p>", unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
-    planos_info = {
-        "BÁSICO": {"preco": "99,99", "info": ["Gestão de controle frota", "Cadastro para 30 veículos", "Serviço inteligente"]},
-        "JÚNIOR 🚀": {"preco": "139,99", "info": ["Cadastro para 30 veículos", "Gestão de oficina", "Histórico de manutenção"]},
-        "SÊNIOR 💎": {"preco": "299,99", "info": ["Cadastro até 500 veículos", "Controle de estoque", "Relatórios técnicos em PDF"]}
-    }
-    
-    cols = [col1, col2, col3]
-    for i, (nome, dados) in enumerate(planos_info.items()):
-        with cols[i]:
-            beneficios_html = "".join([f"<li>{item}</li>" for item in dados["info"]])
-            st.markdown(f"""
-            <div class="flip-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front">
-                        <h2 style='font-family:Orbitron;'>{nome}</h2>
-                        <h1 style='color:#00FF7F; font-family:Orbitron;'>R$ {dados['preco']}</h1>
-                        <p style='color:#00e5ff; font-size:12px;'>TOQUE/MOUSE PARA DETALHES</p>
-                    </div>
-                    <div class="flip-card-back">
-                        <h3 style='font-family:Orbitron; color:#00FF7F; font-size:18px;'>FUNCIONALIDADES</h3>
-                        <ul class="list-features">{beneficios_html}</ul>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Botão de Assinatura com chave única para evitar conflitos
-            if st.button(f"ASSINAR {nome.split()[0]}", key=f"btn_vrs_final_{i}"):
-                st.session_state['plano'] = nome
-                st.session_state['etapa'] = 2
-                st.rerun()
-
-    st.write("---")
-    if st.button("🔐 ACESSO ADMINISTRATIVO"):
-        st.session_state['etapa'] = 3
-        st.rerun()
-
-elif st.session_state['etapa'] == 2:
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<div class='checkout-box'>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='font-family:Orbitron; color:#00e5ff; text-align:center;'>💳 CHECKOUT: {st.session_state.get('plano')}</h2>", unsafe_allow_html=True)
-    nome_input = st.text_input("NOME COMPLETO DO TITULAR:")
-    email_input = st.text_input("E-MAIL PARA RECEBIMENTO:")
-    st.write("---")
-    botoes.exibir_navegacao_venda("PAGAR AGORA ✅", nome_cli=nome_input, email_cli=email_input)
-    st.markdown("</div>", unsafe_allow_html=True)
-
-elif st.session_state['etapa'] == 3:
-    escritorio.exibir_painel_vitor()
+# Botão de ação que não dá erro fatal
+if st.button("FINALIZAR E GERAR PAGAMENTO ✅", use_container_width=True):
+    if nome and doc and id_maquina:
+        # Aqui chamamos o link oficial que você já tem
+        link_mp = "https://www.mercadopago.com.br/checkout/v1/payment/redirect/?preference-id=1840049752-16a7f804-585a-4e8c-9411-96860d5f850b"
+        st.success(f"Tudo pronto, {nome.split()[0]}! Clique abaixo para concluir.")
+        st.markdown(f'<a href="{link_mp}" target="_blank" style="text-decoration:none;"><div style="background-color:#00FF7F; color:#050a0e; padding:15px; text-align:center; border-radius:10px; font-weight:bold; font-size:20px;">PAGAR AGORA</div></a>', unsafe_allow_html=True)
+    else:
+        st.error("⚠️ Por favor, preencha todos os campos para continuar.")
