@@ -2,3 +2,4 @@ streamlit
 mercadopago
 streamlit-autorefresh
 pandas
+python-dotenv
