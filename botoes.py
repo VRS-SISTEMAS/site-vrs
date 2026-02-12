@@ -1,33 +1,38 @@
+# =================================================================
+# NOME DO SISTEMA: VRS Soluções
+# MÓDULO: botoes.py (DNA VISUAL SEM ERROS)
+# =================================================================
 import streamlit as st
 
 def aplicar_estetica_vrs():
-    """ DNA Visual: Fundo Dark e Design via Código (Sem Erros de Imagem) """
+    """ DNA Visual: Fundo Dark e Cards com Estilo Profissional via Código """
     st.markdown("""
         <style>
             #MainMenu, footer, header {visibility: hidden;}
             html, body, [class*="st-"] { font-family: 'Segoe UI', sans-serif; color: #FFFFFF; }
             
-            /* Cards Luxuosos em CSS Puro */
+            /* Estilo dos Cards de Planos - Padrão Luxo */
             .card-vrs {
                 background: #111111;
-                border: 2px solid #333;
-                border-radius: 15px;
-                padding: 30px;
+                border: 1px solid #333333;
+                border-radius: 20px;
+                padding: 40px 25px;
                 text-align: center;
-                transition: 0.3s;
-                height: 380px;
+                transition: 0.4s;
+                min-height: 400px;
                 display: flex;
                 flex-direction: column;
-                justify-content: center;
+                justify-content: space-between;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             }
             .card-vrs:hover {
                 border-color: #00FF7F;
-                transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(0, 255, 127, 0.2);
+                transform: translateY(-8px);
+                box-shadow: 0 15px 30px rgba(0, 255, 127, 0.2);
             }
-            .vrs-titulo { font-size: 28px; font-weight: 800; color: #FFFFFF; margin-bottom: 10px; }
-            .vrs-preco { font-size: 38px; color: #00FF7F; font-weight: 900; margin: 10px 0; }
-            .vrs-desc { color: #888; font-size: 14px; line-height: 1.6; }
+            .vrs-titulo { font-size: 30px; font-weight: 800; color: #FFFFFF; letter-spacing: 2px; }
+            .vrs-preco { font-size: 38px; color: #00FF7F; font-weight: 900; margin: 20px 0; }
+            .vrs-lista { color: #888888; font-size: 14px; text-align: left; line-height: 1.8; margin-bottom: 20px; }
             
             /* Botão de Pagamento Mercado Pago */
             .btn-vrs-pagar {
@@ -41,15 +46,15 @@ def aplicar_estetica_vrs():
     """, unsafe_allow_html=True)
 
 def download_instalador_vrs():
-    st.markdown("<p style='color:#00FF7F; font-size:12px; text-align:center;'>💻 INSTALADOR OBRIGATÓRIO</p>", unsafe_allow_html=True)
-    st.download_button(label="📥 BAIXAR SETUP VRS", data="Setup", file_name="VRS_Setup.exe", use_container_width=True)
+    st.markdown("<p style='color:#00FF7F; font-size:12px; text-align:center;'>💻 SETUP VRS ELITE</p>", unsafe_allow_html=True)
+    st.download_button(label="📥 BAIXAR AGORA", data="Setup", file_name="VRS_Setup.exe", use_container_width=True)
 
 def exibir_navegacao_venda(texto_botao, nome_cli, email_cli, id_pc):
     link_vrs = "https://www.mercadopago.com.br/checkout/v1/payment/redirect/?preference-id=1840049752-16a7f804-585a-4e8c-9411-96860d5f850b"
     if nome_cli and id_pc:
-        st.markdown(f'<a href="{link_vrs}" target="_blank" class="btn-vrs-pagar">{texto_botao}</a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{link_vrs}" target="_blank" class="btn-vrs-pagar" style="text-decoration:none;">{texto_botao}</a>', unsafe_allow_html=True)
     else:
-        st.warning("⚠️ Preencha os dados e o ID para liberar o pagamento.")
+        st.warning("⚠️ Preencha os dados para liberar o pagamento.")
 
 def exibir_acesso_secreto():
     if st.button(".", help="ADM"):
