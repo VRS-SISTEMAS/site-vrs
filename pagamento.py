@@ -9,7 +9,7 @@ import datetime
 import streamlit as st
 
 # --- CONFIGURAÇÃO DAS CHAVES DA VR SOLUÇÕES ---
-ACCESS_TOKEN = "SEU_ACCESS_TOKEN_AQUI" 
+ACCESS_TOKEN = "APP_USR-2172848802037320-020911-a95977c8dfa2d0579a1fa8bcc796a834-130182760" 
 sdk = mercadopago.SDK(ACCESS_TOKEN)
 
 def obter_valor_plano(plano_nome):
