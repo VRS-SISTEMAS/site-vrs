@@ -1,46 +1,116 @@
+# =================================================================
+# NOME DO SISTEMA: VRS Soluções
+# MÓDULO: entrada.py (SISTEMA DE 3 PÁGINAS - VERSÃO SEM ERROS)
+# =================================================================
 import streamlit as st
+import sys
+import os
+
+# 1. FORÇA O PYTHON A LOCALIZAR OS ARQUIVOS NA PASTA ATUAL]
+# Isso ajuda o VS Code e o Streamlit Cloud a encontrarem o 'backend' e 'botoes'
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Importação do módulo de botões (Essencial para o visual)
 import botoes
 
-st.set_page_config(layout="wide", page_title="VR Soluções - Ativação Elite")
+# Importação segura do backend para não travar o VS Code
+backend = None
+try:
+    import backend as vrs_backend
+    backend = vrs_backend
+    backend_ativo = True
+except ImportError:
+    backend_ativo = False
+
+# 2. CONFIGURAÇÃO DE LAYOUT ELITE]
+st.set_page_config(layout="wide", page_title="VRS Soluções - Gestão Elite", page_icon="⚡")
 botoes.aplicar_estetica_vrs()
 
-st.markdown("<h1 style='text-align:center; font-family:Orbitron;'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align:center; color:#00e5ff;'>GESTÃO DE FROTAS E MANUTENÇÃO</p>", unsafe_allow_html=True)
+# 3. CONTROLE DE NAVEGAÇÃO (0: VITRINE, 1: CHECKOUT, 3: ADM)]
+if 'etapa' not in st.session_state:
+    st.session_state['etapa'] = 0
 
-# Estrutura baseada no que funcionava (image_ed460c.png)
-st.markdown("### 👤 Passo 1: Seus Dados")
-col1, col2 = st.columns(2)
-with col1:
-    nome = st.text_input("Nome Completo ou Razão Social:")
-    tipo_doc = st.radio("Documento Principal:", ["CPF", "CNPJ"], horizontal=True)
-with col2:
-    doc = st.text_input(f"Digite seu {tipo_doc}:")
-    whatsapp = st.text_input("WhatsApp com DDD:")
+# --- PÁGINA 1: VITRINE (FOCO TOTAL NO PRODUTO) ---
+if st.session_state['etapa'] == 0:
+    st.markdown("<h1 style='text-align:center; font-size:60px; color:#FFFFFF;'>VRS <span style='color:#00FF7F;'>SOLUÇÕES</span></h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#888; letter-spacing:5px;'>SISTEMAS DE GESTÃO AUTOMOTIVA DE ALTA PERFORMANCE</p>", unsafe_allow_html=True)
+    
+    st.write("---")
+    
+    col_port, col_btn = st.columns([1.6, 1])
+    
+    with col_port:
+        st.markdown("### 🖥️ O QUE VOCÊ ESTÁ ADQUIRINDO:")
+        # Abas para o cliente ver o visual do sistema antes de comprar]
+        aba1, aba2, aba3 = st.tabs(["📊 PAINEL DE FROTAS", "🔧 OFICINA / OS", "📦 PEÇAS"])
+        with aba1:
+            st.image("assets/painel.png", caption="Visualização de Frotas em Tempo Real", use_container_width=True)
+        with aba2:
+            st.image("assets/oficina.png", caption="Gestão de O.S e Manutenções", use_container_width=True)
+        with aba3:
+            st.image("assets/pecas.png", caption="Controle de Estoque e Almoxarifado", use_container_width=True)
 
-st.markdown("### 🚀 Passo 2: Escolha seu Plano")
-# Valores corrigidos: 50, 100 e 500 veículos (image_e33320.png)
-plano_escolhido = st.radio(
-    "Selecione o limite de frota desejado:",
-    ["BÁSICO (50 Veículos) - R$ 99,99", 
-     "JÚNIOR (100 Veículos) - R$ 139,99", 
-     "SÊNIOR (500 Veículos) - R$ 299,99"],
-    horizontal=True
-)
+    with col_btn:
+        st.markdown("### 💎 VANTAGENS DO SISTEMA")
+        st.write("✅ **PAINEL DE FROTAS**: Indicadores precisos.")
+        st.write("✅ **HISTORICO GERAL**: Rastreabilidade total.")
+        st.write("✅ **RELATORIO TECNICO**: Profissionalismo puro.")
+        st.write("✅ **CADASTRO DE PEÇAS**: Estoque sob controle.")
+        
+        st.write("##")
+        # Botão para avançar para a próxima página
+        if st.button("QUERO ADQUIRIR ESTE SISTEMA ➡️", use_container_width=True):
+            st.session_state['etapa'] = 1
+            st.rerun()
 
-st.markdown("### 🔑 Passo 3: Identificação do PC")
-id_maquina = st.text_input("ID da Máquina (exibido no instalador):", placeholder="Ex: B32163D3")
+# --- PÁGINA 2: CHECKOUT (CADASTRO E PAGAMENTO) ---
+elif st.session_state['etapa'] == 1:
+    st.markdown("## 💳 FINALIZAR ATIVAÇÃO")
+    
+    col_form, col_down = st.columns([2, 1])
+    
+    with col_form:
+        tipo_cad = st.radio("Selecione o tipo de cadastro:", ["Pessoa Física (CPF)", "Empresa (CNPJ)"], horizontal=True)
+        nome_cli = st.text_input("NOME COMPLETO OU RAZÃO SOCIAL:")
+        doc_cli = st.text_input(f"DIGITE O {tipo_cad}:")
+        email_cli = st.text_input("E-MAIL PARA RECEBER A CHAVE:")
+        id_pc_cli = st.text_input("ID DA MÁQUINA (VEJA NO INSTALADOR):")
+        
+        st.write("---")
+        # Botão de pagamento integrado no botoes.py]
+        botoes.exibir_navegacao_venda("EFETUAR PAGAMENTO 🚀", nome_cli, email_cli, id_pc_cli)
+        
+        st.write("##")
+        # Botão de Voltar para a Vitrine
+        if st.button("⬅️ VOLTAR PARA VITRINE"):
+            st.session_state['etapa'] = 0
+            st.rerun()
 
-st.markdown("### 💰 Passo 4: Pagamento")
-forma_pagto = st.radio("Forma de pagamento:", ["Pix (Ativação Automática ⚡)", "Cartão / Boleto"], horizontal=True)
+    with col_down:
+        botoes.download_instalador_vrs()
 
-st.write("---")
-
-# Botão de ação que não dá erro fatal
-if st.button("FINALIZAR E GERAR PAGAMENTO ✅", use_container_width=True):
-    if nome and doc and id_maquina:
-        # Aqui chamamos o link oficial que você já tem
-        link_mp = "https://www.mercadopago.com.br/checkout/v1/payment/redirect/?preference-id=1840049752-16a7f804-585a-4e8c-9411-96860d5f850b"
-        st.success(f"Tudo pronto, {nome.split()[0]}! Clique abaixo para concluir.")
-        st.markdown(f'<a href="{link_mp}" target="_blank" style="text-decoration:none;"><div style="background-color:#00FF7F; color:#050a0e; padding:15px; text-align:center; border-radius:10px; font-weight:bold; font-size:20px;">PAGAR AGORA</div></a>', unsafe_allow_html=True)
+# --- PÁGINA 3: ESCRITÓRIO ADM (GERENCIAMENTO) ---
+elif st.session_state['etapa'] == 3:
+    st.markdown("## 👨‍💼 ESCRITÓRIO VRS SOLUÇÕES")
+    
+    # Executa funções do backend se ele estiver disponível]
+    if backend_ativo:
+        visitas = backend.registrar_visita()
+        st.success(f"Sistema Online - Visitas Totais: {visitas}")
     else:
-        st.error("⚠️ Por favor, preencha todos os campos para continuar.")
+        st.warning("Aviso: Módulo backend não carregado no VS Code, mas o site continuará funcionando.")
+        
+    st.info("Espaço reservado para gestão de licenças e vendas.")
+    
+    if st.button("⬅️ SAIR DO PAINEL ADM"):
+        st.session_state['etapa'] = 0
+        st.rerun()
+
+# --- RODAPÉ COM ACESSO ADM ---
+st.write("---")
+col_foo, col_adm_btn = st.columns([10, 1])
+with col_foo:
+    st.markdown("<p style='color:#333; font-size:12px;'>VRS SOLUÇÕES SISTEMAS © 2026 - TODOS OS DIREITOS RESERVADOS</p>", unsafe_allow_html=True)
+with col_adm_btn:
+    # O seu escritório secreto voltou para o cantinho]
+    botoes.exibir_acesso_secreto()
