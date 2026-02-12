@@ -1,30 +1,31 @@
 # =================================================================
 # NOME DO SISTEMA: VRS Soluções
-# MÓDULO: botoes.py (DESIGN DE ELITE INCLUSIVO)
+# MÓDULO: botoes.py (ESTILO LUXO E DOWNLOAD DISCRETO)
 # =================================================================
 import streamlit as st
 
 def aplicar_estetica_vrs():
-    """ DNA Visual: Fundo Dark, Letras Brancas e Estilo Software de Luxo """
+    """ Define o DNA visual Dark Elite: fundo escuro e letras brancas """
     st.markdown("""
         <style>
+            /* Esconde menus desnecessários do Streamlit */
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
             
-            /* Tipografia limpa e cores de alto contraste para leitura fácil */
+            /* Tipografia limpa e cor branca para leitura em dark mode */
             html, body, [class*="st-"] { 
                 font-family: 'Segoe UI', sans-serif; 
                 color: #FFFFFF; 
             }
             
-            /* Nome da marca discreto no topo conforme solicitado */
+            /* Nome da marca minúsculo no topo para identidade visual */
             .vrs-brand { 
                 position: fixed; top: 10px; left: 10px; 
                 font-size: 11px; color: #555; z-index: 1000; 
             }
             
-            /* Botão de Pagamento com brilho e gradiente de alta conversão */
+            /* Botão de Pagamento com gradiente verde de alta performance */
             .btn-vrs-pagar {
                 display: block; width: 100%; padding: 22px;
                 background: linear-gradient(135deg, #00FF7F 0%, #008040 100%);
@@ -43,26 +44,24 @@ def aplicar_estetica_vrs():
     """, unsafe_allow_html=True)
 
 def download_instalador_vrs():
-    """ Organiza a área de download com visual moderno """
-    st.markdown("""
-        <div style="background: rgba(0, 255, 127, 0.05); border: 1px dashed #00FF7F; border-radius: 15px; padding: 20px; text-align: center;">
-            <h4 style="color:#00FF7F; margin:0;">📥 PRIMEIRO PASSO</h4>
-            <p style="color:#888; font-size:13px;">Baixe o instalador para identificar sua máquina.</p>
-        </div>
-    """, unsafe_allow_html=True)
+    """ 
+    Cria a área de download simplificada.
+    Reduzido o tamanho para dar foco ao portfólio de vendas.
+    """
+    st.markdown("<p style='color:#00FF7F; font-size:12px; margin-bottom:5px; text-align:center;'>💻 NECESSÁRIO PARA ATIVAÇÃO</p>", unsafe_allow_html=True)
     st.download_button(
-        label="📥 BAIXAR INSTALADOR VRS ELITE",
+        label="📥 BAIXAR INSTALADOR",
         data="Executável aqui", 
         file_name="VRS_Elite_Setup.exe",
         use_container_width=True,
-        help="Execute para obter o seu ID de ativação."
+        help="Baixe para obter o seu ID de máquina."
     )
 
 def exibir_navegacao_venda(texto_botao, nome_cli, email_cli, id_pc):
-    """ Habilita o checkout apenas com dados preenchidos para segurança """
+    """ Habilita o checkout oficial em nova aba """
     link_vrs = "https://www.mercadopago.com.br/checkout/v1/payment/redirect/?preference-id=1840049752-16a7f804-585a-4e8c-9411-96860d5f850b"
     
-    # Validação inteligente: nome, e-mail válido e ID da máquina presente
+    # Valida se os dados essenciais foram preenchidos
     if nome_cli and "@" in email_cli and id_pc:
         st.markdown(f'''
             <form action="{link_vrs}" method="get" target="_blank">
@@ -70,9 +69,11 @@ def exibir_navegacao_venda(texto_botao, nome_cli, email_cli, id_pc):
             </form>
         ''', unsafe_allow_html=True)
     else:
-        st.warning("⚠️ Preencha Nome, E-mail e ID da Máquina para habilitar o pagamento.")
+        # Alerta amigável se o cliente esquecer algum dado
+        st.warning("⚠️ Informe Nome, E-mail e ID da Máquina para habilitar o pagamento.")
 
 def exibir_acesso_secreto():
+    """ Botão administrativo discreto """
     if st.button(".", help="Acesso ADM"):
         st.session_state['etapa'] = 3
         st.rerun()
