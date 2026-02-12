@@ -1,11 +1,11 @@
 # =================================================================
 # NOME DO SISTEMA: VRS Soluções
-# MÓDULO: botoes.py (NAVEGAÇÃO ELITE E ESTÉTICA)
+# MÓDULO: botoes.py (ESTÉTICA CARDS 3D E NAVEGAÇÃO)
 # =================================================================
 import streamlit as st
 
 def aplicar_estetica_vrs():
-    """ DNA Visual: Fundo Dark, Letras Brancas e Estilo Software Premium """
+    """ DNA Visual Elite: Fundo Dark e Efeito Cards 3D """
     st.markdown("""
         <style>
             #MainMenu {visibility: hidden;}
@@ -13,60 +13,49 @@ def aplicar_estetica_vrs():
             header {visibility: hidden;}
             html, body, [class*="st-"] { font-family: 'Segoe UI', sans-serif; color: #FFFFFF; }
             
-            /* Botão de Próxima Etapa / Avançar */
-            .stButton>button {
-                width: 100%;
-                background: linear-gradient(135deg, #00FF7F 0%, #008040 100%);
-                color: #050a0e !important;
-                font-weight: 900;
-                border-radius: 10px;
-                border: none;
-                height: 50px;
-                transition: 0.3s;
+            /* Estilo dos Cards de Planos */
+            .card-vrs {
+                background: #111;
+                border: 1px solid #333;
+                border-radius: 20px;
+                padding: 30px;
+                text-align: center;
+                transition: 0.5s;
+                margin-bottom: 20px;
             }
+            .card-vrs:hover {
+                border-color: #00FF7F;
+                transform: translateY(-10px);
+                box-shadow: 0 10px 30px rgba(0, 255, 127, 0.2);
+            }
+            .vrs-price { font-size: 38px; color: #00FF7F; font-weight: 800; margin: 15px 0; }
             
-            /* Botão Voltar (Estilo mais discreto) */
-            .btn-voltar button {
-                background: #333 !important;
-                color: white !important;
-            }
-
             /* Botão de Pagamento Mercado Pago */
             .btn-vrs-pagar {
                 display: block; width: 100%; padding: 20px;
                 background: linear-gradient(135deg, #00FF7F 0%, #008040 100%);
                 color: #050a0e !important; text-align: center;
-                border-radius: 15px; font-weight: 900; font-size: 24px;
-                text-decoration: none !important; 
-                box-shadow: 0 10px 30px rgba(0, 255, 127, 0.4);
+                border-radius: 12px; font-weight: 900; font-size: 24px;
+                text-decoration: none !important;
             }
         </style>
     """, unsafe_allow_html=True)
 
 def download_instalador_vrs():
-    """ Área de download para obter o ID da máquina """
+    """ Área de download compacta no checkout """
     st.markdown("<p style='color:#00FF7F; font-size:12px; margin-bottom:5px;'>💻 INSTALADOR OBRIGATÓRIO</p>", unsafe_allow_html=True)
-    st.download_button(
-        label="📥 BAIXAR INSTALADOR VRS",
-        data="Binário aqui", 
-        file_name="VRS_Elite_Setup.exe",
-        use_container_width=True
-    )
+    st.download_button(label="📥 BAIXAR INSTALADOR VRS", data="Binário", file_name="VRS_Setup.exe", use_container_width=True)
 
 def exibir_navegacao_venda(texto_botao, nome_cli, email_cli, id_pc):
-    """ Gera o link de pagamento final do Mercado Pago """
+    """ Link oficial de pagamento """
     link_vrs = "https://www.mercadopago.com.br/checkout/v1/payment/redirect/?preference-id=1840049752-16a7f804-585a-4e8c-9411-96860d5f850b"
     if nome_cli and "@" in email_cli and id_pc:
         st.markdown(f'<a href="{link_vrs}" target="_blank" class="btn-vrs-pagar" style="text-decoration:none;">{texto_botao}</a>', unsafe_allow_html=True)
     else:
-        st.warning("⚠️ Preencha Nome, E-mail e ID da Máquina para pagar.")
-
-def proxima_etapa(nova_etapa):
-    """ Função para avançar entre as páginas do site """
-    st.session_state['etapa'] = nova_etapa
-    st.rerun()
+        st.warning("⚠️ CEO, preencha todos os campos para liberar o pagamento.")
 
 def exibir_acesso_secreto():
-    """ Botão discreto para o seu escritório """
+    """ Ponto ADM discreto no rodapé] """
     if st.button(".", help="Acesso ADM"):
-        proxima_etapa(3)
+        st.session_state['etapa'] = 3
+        st.rerun()
