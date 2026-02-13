@@ -5,9 +5,9 @@
 import streamlit as st
 
 def exibir_vitrine_vrs():
+    # Estilos CSS de alto padrão para a vitrine
     st.markdown("""
         <style>
-        /* Estilos Globais de Luxo */
         .titulo-vrs { text-align: center; color: white; font-size: 3.8rem !important; font-weight: 900; letter-spacing: -1px; margin-bottom: 0px; }
         .subtitulo-vrs { text-align: center; color: #00FF7F; font-size: 1.2rem; font-weight: 300; letter-spacing: 3px; margin-bottom: 30px; text-transform: uppercase; }
         
@@ -31,7 +31,6 @@ def exibir_vitrine_vrs():
         .lista-recursos { text-align: left; color: #ccc; font-size: 0.95rem; line-height: 2; margin-top: 20px; }
         .item-check { color: #00FF7F; font-weight: bold; margin-right: 10px; }
 
-        /* Container de Benefícios Lux */
         .container-beneficios {
             background: #050505;
             padding: 40px; border-radius: 25px; margin-top: 60px;
@@ -41,6 +40,7 @@ def exibir_vitrine_vrs():
         </style>
     """, unsafe_allow_html=True)
 
+    # Títulos principais
     st.markdown("<h1 class='titulo-vrs'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
     st.markdown("<p class='subtitulo-vrs'>Evolução Digital em Gestão</p>", unsafe_allow_html=True)
 
@@ -53,70 +53,37 @@ def exibir_vitrine_vrs():
 
     col1, col2, col3 = st.columns(3)
 
-    # --- PLANO BÁSICO ---
-    with col1:
-        st.markdown("""
-            <div class='card-plano'>
-                <h4 style='color: white; margin-bottom: 0;'>Plano Básico</h4>
-                <div class='preco-vrs'>99.99</div>
-                <div class='texto-suporte'>Com suporte para 50<br>Veículos</div>
-                <hr style='border-color: #222;'>
-                <div class='lista-recursos'>
-                    <div><span class='item-check'>✔</span> Gestão de Peças & Estoque</div>
-                    <div><span class='item-check'>✔</span> Relatórios Técnicos PDF</div>
-                    <div><span class='item-check'>✔</span> Suporte VRS Chat</div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("ATIVAR BÁSICO 💎", key="b_vrs", use_container_width=True):
-            st.session_state.plano_selecionado = "Básico"
-            st.session_state.etapa = "ativacao"
-            st.rerun()
+    # Lógica de exibição dos Cards (Básico, Júnior e Sênior)
+    planos = [
+        {"nome": "Básico", "preco": "99.99", "suporte": "50 Veículos", "key": "b_vrs", "col": col1, "popular": False},
+        {"nome": "Júnior", "preco": "149.99", "suporte": "100 Veículos", "key": "j_vrs", "col": col2, "popular": True},
+        {"nome": "Sênior", "preco": "299.99", "suporte": "500 Veículos", "key": "s_vrs", "col": col3, "popular": False}
+    ]
 
-    # --- PLANO JÚNIOR ---
-    with col2:
-        st.markdown("""
-            <div class='card-plano card-popular'>
-                <h4 style='color: #00FF7F; margin-bottom: 0;'>Plano Júnior</h4>
-                <div class='preco-vrs'>149.99</div>
-                <div class='texto-suporte'>Com suporte para 100<br>Veículos</div>
-                <hr style='border-color: #222;'>
-                <div class='lista-recursos'>
-                    <div><span class='item-check'>✔</span> Gestão de Peças & Estoque</div>
-                    <div><span class='item-check'>✔</span> Relatórios Técnicos PDF</div>
-                    <div><span class='item-check'>✔</span> Suporte VRS Chat</div>
+    for p in planos:
+        with p["col"]:
+            classe_extra = "card-popular" if p["popular"] else ""
+            st.markdown(f"""
+                <div class='card-plano {classe_extra}'>
+                    <h4 style='color: {"#00FF7F" if p["popular"] else "white"}; margin-bottom: 0;'>Plano {p["nome"]}</h4>
+                    <div class='preco-vrs'>{p["preco"]}</div>
+                    <div class='texto-suporte'>Com suporte para {p["suporte"]}</div>
+                    <hr style='border-color: #222;'>
+                    <div class='lista-recursos'>
+                        <div><span class='item-check'>✔</span> Gestão de Peças & Estoque</div>
+                        <div><span class='item-check'>✔</span> Relatórios Técnicos PDF</div>
+                        <div><span class='item-check'>✔</span> Suporte VRS Chat</div>
+                    </div>
                 </div>
-            </div>
-        """, unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("ATIVAR JÚNIOR 💎", key="j_vrs", use_container_width=True):
-            st.session_state.plano_selecionado = "Júnior"
-            st.session_state.etapa = "ativacao"
-            st.rerun()
+            """, unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
+            # Ação do botão: Salva o plano e muda a etapa para ativação
+            if st.button(f"ATIVAR {p['nome'].upper()} 💎", key=p["key"], use_container_width=True):
+                st.session_state.plano_selecionado = p["nome"]
+                st.session_state.etapa = "ativacao"
+                st.rerun()
 
-    # --- PLANO SÊNIOR ---
-    with col3:
-        st.markdown("""
-            <div class='card-plano'>
-                <h4 style='color: white; margin-bottom: 0;'>Plano Sênior</h4>
-                <div class='preco-vrs'>299.99</div>
-                <div class='texto-suporte'>Com suporte para 500<br>Veículos</div>
-                <hr style='border-color: #222;'>
-                <div class='lista-recursos'>
-                    <div><span class='item-check'>✔</span> Gestão de Peças & Estoque</div>
-                    <div><span class='item-check'>✔</span> Relatórios Técnicos PDF</div>
-                    <div><span class='item-check'>✔</span> Suporte VRS Chat</div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("ATIVAR SÊNIOR 💎", key="s_vrs", use_container_width=True):
-            st.session_state.plano_selecionado = "Sênior"
-            st.session_state.etapa = "ativacao"
-            st.rerun()
-
-    # --- CONTAINER DE BENEFÍCIOS (O QUE TINHA SUMIDO) ---
+    # Seção de Benefícios da Elite
     st.markdown("""
         <div class='container-beneficios'>
             <h2 style='color: white; margin-top: 0;'>🚀 Por que a VRS é a escolha da Elite?</h2>

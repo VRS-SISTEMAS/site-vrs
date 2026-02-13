@@ -6,8 +6,10 @@ import streamlit as st
 import anuncio
 import pagamento
 
+# Configuração da Página: Layout largo e menu lateral recolhido
 st.set_page_config(page_title="VRS Soluções", layout="wide", initial_sidebar_state="collapsed")
 
+# Inicialização do Estado da Sessão (Evita que o site "esqueça" onde o usuário está)
 if "etapa" not in st.session_state:
     st.session_state.etapa = "vitrine"
 if "plano_selecionado" not in st.session_state:
@@ -15,16 +17,16 @@ if "plano_selecionado" not in st.session_state:
 if "dados_venda" not in st.session_state:
     st.session_state.dados_venda = {}
 
-# --- BARRA LATERAL (SIDEBAR) COM SUPORTE ---
+# --- BARRA LATERAL (SIDEBAR) ---
 with st.sidebar:
     st.markdown("<h2 style='color: #00FF7F;'>VRS Soluções</h2>", unsafe_allow_html=True)
     st.divider()
     
-    # Botão de Início e E-mail lado a lado
-    if st.button("🏠 INÍCIO", use_container_width=True):
+    if st.button("🏠 VOLTAR AO INÍCIO", use_container_width=True):
         st.session_state.etapa = "vitrine"
         st.rerun()
     
+    # Informação de suporte unificada
     st.markdown("""
         <div style='background: #111; padding: 15px; border-radius: 10px; border-left: 3px solid #00FF7F;'>
             <p style='color: #888; font-size: 0.8rem; margin: 0;'>SUPORTE TÉCNICO:</p>
@@ -32,7 +34,8 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-# --- GESTÃO DE TELAS ---
+# --- GESTÃO DE TELAS (O CORAÇÃO DO SITE) ---
+
 if st.session_state.etapa == "vitrine":
     anuncio.exibir_vitrine_vrs()
 
@@ -56,7 +59,7 @@ elif st.session_state.etapa == "ativacao":
                     st.session_state.etapa = "pagamento"
                     st.rerun()
                 else:
-                    st.error("⚠️ Preencha todos os campos!")
+                    st.error("⚠️ Preencha todos os campos obrigatórios!")
 
 elif st.session_state.etapa == "pagamento":
     pagamento.exibir_tela_pagamento(st.session_state.plano_selecionado, st.session_state.dados_venda)
