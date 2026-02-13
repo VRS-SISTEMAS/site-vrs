@@ -5,37 +5,34 @@
 import streamlit as st
 
 def exibir_vitrine_vrs():
-    # Estilização Profissional
-    st.markdown("""
-        <style>
-        .titulo-vrs { text-align: center; color: white; font-size: 3.5rem !important; font-weight: 850; margin-bottom: 5px; }
-        .subtitulo-vrs { text-align: center; color: #00c853; font-size: 1.3rem; margin-bottom: 30px; }
-        .card { background-color: #1e1e1e; padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; min-height: 400px; transition: 0.3s; }
-        .card:hover { border-color: #00c853; transform: translateY(-5px); box-shadow: 0px 10px 20px rgba(0,0,0,0.5); }
-        .preco { color: #00c853; font-size: 2.2rem; font-weight: bold; }
-        .stButton>button { width: 100%; border-radius: 10px; height: 3.5em; background-color: #00c853; color: white; font-weight: bold; border: none; }
-        </style>
-    """, unsafe_allow_html=True)
-
-    st.markdown("<h1 class='titulo-vrs'>VRS Soluções</h1>", unsafe_allow_html=True)
-    st.markdown("<p class='subtitulo-vrs'>Tecnologia de Ponta para Gestão de Frotas</p>", unsafe_allow_html=True)
+    # Título imponente usando o estilo neon
+    st.markdown("<h1 style='text-align: center; color: #00FF7F; font-size: 4rem; font-weight: 900; margin-bottom:0;'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align: center; color: #888; letter-spacing: 5px; margin-bottom: 50px;'>TECNOLOGIA ELITE PARA GESTÃO DE FROTAS</p>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
 
-    with col1:
-        st.markdown("<div class='card'><h3>BÁSICO</h3><p class='preco'>R$ 99,99</p><p style='color: #888;'>Até 50 Veículos</p><hr style='border-color: #333;'><p style='text-align: left;'>✅ Oficina<br>✅ Cadastro</p></div>", unsafe_allow_html=True)
-        if st.button("ASSINAR BÁSICO", key="btn_basico"):
-            st.session_state.plano_selecionado = "Básico (50 Veículos)"
-            st.rerun()
+    # Dados dos planos para evitar repetição de código
+    planos = [
+        {"nome": "BÁSICO", "preco": "99,99", "frota": "Até 50 Veículos", "lista": "✅ Oficina<br>✅ Cadastro<br>✅ Entradas", "key": "b_vrs", "label": "Básico (50 Veículos)"},
+        {"nome": "JÚNIOR", "preco": "149,99", "frota": "Até 100 Veículos", "lista": "✅ Peças<br>✅ Relatórios<br>✅ Histórico", "key": "j_vrs", "label": "Júnior (100 Veículos)"},
+        {"nome": "SÊNIOR", "preco": "299,99", "frota": "Até 500 Veículos", "lista": "✅ Painel Fleet<br>✅ Consultoria<br>✅ Suporte VIP", "key": "s_vrs", "label": "Sênior (500 Veículos)"}
+    ]
 
-    with col2:
-        st.markdown("<div class='card' style='border: 2px solid #00c853;'><h3 style='color: #00c853;'>JÚNIOR</h3><p class='preco'>R$ 149,99</p><p style='color: #888;'>Até 100 Veículos</p><hr style='border-color: #333;'><p style='text-align: left;'>✅ Peças<br>✅ Relatórios</p></div>", unsafe_allow_html=True)
-        if st.button("ASSINAR JÚNIOR", key="btn_junior"):
-            st.session_state.plano_selecionado = "Júnior (100 Veículos)"
-            st.rerun()
-
-    with col3:
-        st.markdown("<div class='card'><h3>SÊNIOR</h3><p class='preco'>R$ 299,99</p><p style='color: #888;'>Até 500 Veículos</p><hr style='border-color: #333;'><p style='text-align: left;'>✅ Painel Total<br>✅ Consultoria</p></div>", unsafe_allow_html=True)
-        if st.button("ASSINAR SÊNIOR", key="btn_senior"):
-            st.session_state.plano_selecionado = "Sênior (500 Veículos)"
-            st.rerun()
+    for i, col in enumerate([col1, col2, col3]):
+        with col:
+            p = planos[i]
+            # Usando EXATAMENTE a classe card-vrs do botoes.py
+            st.markdown(f"""
+                <div class="card-vrs">
+                    <div>
+                        <div class="vrs-titulo">{p['nome']}</div>
+                        <div class="vrs-preco">R$ {p['preco']}</div>
+                        <p style="color: #666;">{p['frota']}</p>
+                        <hr style="border-color: #222;">
+                        <div class="vrs-lista">{p['lista']}</div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+            if st.button(f"SELECIONAR {p['nome']}", key=p['key'], use_container_width=True):
+                st.session_state.plano_selecionado = p['label']
+                st.rerun()
