@@ -1,85 +1,74 @@
 # =================================================================
 # NOME DO SISTEMA: VR SOLUÇÕES Sistemas
-# MÓDULO: Vitrine e Ecossistema (anuncio.py)
+# MÓDULO: Vitrine Publicitária (anuncio.py)
 # =================================================================
 import streamlit as st
 
 def exibir_vitrine_vrs():
-    # Estilização para organizar o layout e limpar o fundo
+    # Estilização para deixar os cards e o título perfeitos
     st.markdown("""
         <style>
-        .bloco-vrs {
-            background-color: #1e1e1e;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 5px solid #00c853;
-            margin-bottom: 15px;
-            min-height: 100px;
+        .titulo-vrs {
+            text-align: center; color: white; 
+            font-size: 4rem !important; font-weight: 850;
+            margin-bottom: 5px; letter-spacing: -1px;
         }
-        .titulo-secao { color: #00c853; font-weight: bold; font-size: 1.2rem; margin-bottom: 5px; }
-        .texto-corpo { color: #ddd; font-size: 0.95rem; }
+        .subtitulo-vrs {
+            text-align: center; color: #00c853; 
+            font-size: 1.4rem; margin-bottom: 30px;
+        }
+        .container-apresentacao {
+            background-color: #1e1e1e; padding: 30px;
+            border-radius: 15px; border-left: 6px solid #00c853;
+            margin-bottom: 40px; line-height: 1.6;
+        }
+        .card {
+            background-color: #1e1e1e; padding: 30px; border-radius: 20px;
+            border: 1px solid #333; text-align: center; min-height: 420px;
+            transition: 0.3s;
+        }
+        .card:hover { 
+            border-color: #00c853; 
+            transform: translateY(-5px);
+            box-shadow: 0px 10px 20px rgba(0,0,0,0.5); 
+        }
+        .preco { color: #00c853; font-size: 2.2rem; font-weight: bold; }
+        .stButton>button {
+            width: 100%; border-radius: 10px; height: 3.5em;
+            background-color: #00c853; color: white; font-weight: bold; border: none;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    # Título Principal Centralizado
-    st.markdown("<h1 style='text-align: center; color: #00c853; font-size: 3rem;'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; letter-spacing: 2px;'>O FUTURO DA GESTÃO AUTOMOTIVA</p>", unsafe_allow_html=True)
-    st.divider()
+    st.markdown("<h1 class='titulo-vrs'>VRS Soluções</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='subtitulo-vrs'>Sistemas Inteligentes para Gestão e Controle</p>", unsafe_allow_html=True)
+    
+    st.markdown("""
+        <div class='container-apresentacao'>
+            <h3 style='color: #00c853; margin-top: 0;'>🛠️ Transforme a gestão da sua oficina e frota</h3>
+            <p style='font-size: 1.1rem; color: #ddd;'>
+                A <b>VRS Soluções</b> centraliza tudo o que importa: desde o cadastro de veículos até relatórios técnicos complexos. 
+                Ganhe <b>agilidade no atendimento</b> e <b>segurança nos dados</b> em tempo real.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # Divisão em 2 colunas para parar de encavalar
-    col_esquerda, col_direita = st.columns([1.2, 1])
+    col1, col2, col3 = st.columns(3)
 
-    with col_esquerda:
-        st.markdown("### 🖥️ CONHEÇA SEU NOVO ECOSSISTEMA")
-        
-        st.markdown("""
-            <div class='bloco-vrs'>
-                <div class='titulo-secao'>📊 PAINEL DE FROTAS</div>
-                <div class='texto-corpo'>Visão completa da sua operação em tempo real com indicadores Elite de desempenho e status.</div>
-            </div>
-            
-            <div class='bloco-vrs'>
-                <div class='titulo-secao'>🛠️ MANUTENÇÃO / HISTÓRICO</div>
-                <div class='texto-corpo'>Controle técnico total: Ordens de Serviço detalhadas e histórico completo por veículo da frota.</div>
-            </div>
-            
-            <div class='bloco-vrs'>
-                <div class='titulo-secao'>📦 CADASTRO DE PEÇAS</div>
-                <div class='texto-corpo'>Gestão de estoque inteligente integrada para garantir que os itens essenciais nunca faltem.</div>
-            </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("---")
-        st.link_button("📥 BAIXAR INSTALADOR AGORA", "https://vrsolucoes.com.br/download", use_container_width=True)
+    with col1:
+        st.markdown("<div class='card'><h3>BÁSICO</h3><p class='preco'>R$ 99,99</p><p style='color: #888;'>Até 50 Veículos</p><hr style='border-color: #333;'><p style='text-align: left;'>✅ Oficina<br>✅ Cadastro<br>✅ Entradas</p></div>", unsafe_allow_html=True)
+        if st.button("ASSINAR BÁSICO", key="b_vrs"):
+            st.session_state.plano_selecionado = "Básico (50 Veículos)"
+            st.rerun()
 
-    with col_direita:
-        with st.container(border=True):
-            st.markdown("<h3 style='text-align: center;'>💎 ATIVAÇÃO DE LICENÇA</h3>", unsafe_allow_html=True)
-            
-            plano = st.selectbox("Selecione o limite de frota:", 
-                                ["Básico (50 Veículos) - R$ 99,99", 
-                                 "Júnior (100 Veículos) - R$ 149,99", 
-                                 "Sênior (500 Veículos) - R$ 299,99"])
-            
-            tipo_cad = st.radio("Tipo de Cadastro:", ["CPF", "CNPJ"], horizontal=True)
-            
-            nome = st.text_input("NOME COMPLETO OU RAZÃO SOCIAL:")
-            doc = st.text_input(f"DIGITE O {tipo_cad}:")
-            email = st.text_input("E-MAIL PARA ENVIO DA CHAVE:")
-            machine_id = st.text_input("ID DA MÁQUINA (VEJA NO INSTALADOR):")
-            
-            st.divider()
-            
-            if st.button("GERAR PIX PARA ATIVAÇÃO", use_container_width=True, type="primary"):
-                if nome and email and doc and machine_id:
-                    # Salva os dados na sessão para o index.py processar
-                    st.session_state.plano_selecionado = plano
-                    st.session_state.dados_usuario = {
-                        "nome": nome,
-                        "email": email,
-                        "doc": doc,
-                        "id_maquina": machine_id
-                    }
-                    st.rerun()
-                else:
-                    st.error("⚠️ Por favor, preencha todos os campos!")
+    with col2:
+        st.markdown("<div class='card' style='border: 2px solid #00c853;'><h3 style='color: #00c853;'>JÚNIOR</h3><p class='preco'>R$ 149,99</p><p style='color: #888;'>Até 100 Veículos</p><hr style='border-color: #333;'><p style='text-align: left;'>✅ Peças<br>✅ Relatórios<br>✅ Histórico</p></div>", unsafe_allow_html=True)
+        if st.button("ASSINAR JÚNIOR", key="j_vrs"):
+            st.session_state.plano_selecionado = "Júnior (100 Veículos)"
+            st.rerun()
+
+    with col3:
+        st.markdown("<div class='card'><h3>SÊNIOR</h3><p class='preco'>R$ 299,99</p><p style='color: #888;'>Até 500 Veículos</p><hr style='border-color: #333;'><p style='text-align: left;'>✅ Painel Fleet<br>✅ Consultoria<br>✅ Suporte VIP</p></div>", unsafe_allow_html=True)
+        if st.button("ASSINAR SÊNIOR", key="s_vrs"):
+            st.session_state.plano_selecionado = "Sênior (500 Veículos)"
+            st.rerun()
