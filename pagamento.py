@@ -7,19 +7,21 @@ import mercadopago
 
 def exibir_tela_pagamento(plano, dados_venda):
     """
-    Função que integra o Checkout Pro do Mercado Pago (Cartão, Boleto e Pix).
+    Função que integra o Checkout Pro do Mercado Pago e organiza o visual.
     """
+    # Cabeçalho da página de pagamento
     st.markdown(f"### 🚀 Ativando o Plano {plano}")
-    st.write("Clique no botão abaixo para escolher sua forma de pagamento (Cartão, Boleto ou Pix).")
+    st.write("Escolha sua forma de pagamento abaixo para concluir a assinatura.")
 
     # 1. Configuração do SDK do Mercado Pago
     try:
+        # O Token de acesso deve estar configurado nos 'Secrets' do Streamlit
         sdk = mercadopago.SDK(st.secrets["ACCESS_TOKEN_MP"])
     except Exception as e:
         st.error("Erro ao carregar credenciais de pagamento. Verifique os Secrets.")
         return
 
-    # 2. Definição dos valores conforme os planos da VRS Soluções
+    # 2. Definição dos valores conforme os planos da VR Soluções
     valores = {
         "Básico": 99.99,
         "Júnior": 149.99,
@@ -28,7 +30,7 @@ def exibir_tela_pagamento(plano, dados_venda):
     valor_final = valores.get(plano, 99.99)
 
     # 3. Criação da Preferência de Pagamento (Checkout Pro)
-    # Aqui configuramos o item, o preço e para onde o cliente volta depois.
+    # Define o que o cliente está comprando e os links de retorno
     preference_data = {
         "items": [
             {
@@ -45,42 +47,55 @@ def exibir_tela_pagamento(plano, dados_venda):
         "auto_return": "approved",
     }
 
-    # 4. Execução da chamada à API e geração do Link de Pagamento
+    # 4. Comunicação com a API do Mercado Pago
+    # Geramos o link apenas uma vez por sessão para evitar cobranças duplicadas
     if 'link_pagamento' not in st.session_state:
-        with st.spinner("Preparando seu pagamento seguro..."):
+        with st.spinner("Preparando ambiente seguro..."):
             result = sdk.preference().create(preference_data)
             pagamento = result["response"]
             
             if "init_point" in pagamento:
-                # O 'init_point' é o link oficial da tela de pagamento do Mercado Pago
+                # Armazena o link oficial de checkout do Mercado Pago
                 st.session_state.link_pagamento = pagamento["init_point"]
             else:
-                st.error("Erro ao gerar a tela de pagamento. Tente novamente mais tarde.")
+                st.error("Erro ao gerar o link. Tente novamente mais tarde.")
                 return
 
-    # 5. Interface de Pagamento Profissional
-    st.info("Você será redirecionado para o ambiente seguro do Mercado Pago.")
-    
-    # Criamos um botão que abre o link de pagamento em uma nova aba
-    st.link_button("💳 PAGAR AGORA (Cartão, Boleto ou Pix)", st.session_state.link_pagamento, type="primary", use_container_width=True)
-    
-    st.warning("O acesso será liberado imediatamente após a confirmação do pagamento.")
+    # 5. Interface de Pagamento com Visual Ajustado
+    # Criamos 3 colunas para centralizar e diminuir o tamanho dos botões
+    # A proporção [1, 2, 1] cria margens laterais e uma coluna central maior
+    col_margem_esq, col_central, col_margem_dir = st.columns([1, 2, 1])
 
-    if st.button("Voltar para a Vitrine"):
-        # Limpa o estado para permitir novas tentativas
-        if 'link_pagamento' in st.session_state:
-            del st.session_state.link_pagamento
-        st.session_state.etapa = "vitrine"
-        st.rerun()
+    with col_central:
+        # Caixa de informação centralizada
+        st.info("Você será levado ao ambiente seguro do Mercado Pago.")
+        
+        # Botão de pagamento com tamanho controlado pela coluna
+        st.link_button(
+            "💳 PAGAR AGORA (Cartão, Boleto ou Pix)", 
+            st.session_state.link_pagamento, 
+            type="primary", 
+            use_container_width=True
+        )
+        
+        # Alerta sobre a liberação do acesso
+        st.warning("Acesso liberado após a confirmação.")
+
+        # Botão para retornar à vitrine caso o usuário queira mudar de plano
+        if st.button("Voltar para a Vitrine", use_container_width=True):
+            if 'link_pagamento' in st.session_state:
+                del st.session_state.link_pagamento
+            st.session_state.etapa = "vitrine"
+            st.rerun()
 
 def exibir_suporte_footer():
     """
-    Exibe informações de suporte ao final da página.
+    Exibe informações de suporte da VRS Soluções no rodapé.
     """
     st.markdown("---")
     st.markdown(f"""
         <div style='text-align: center; color: #888;'>
-            <p>Dúvidas na ativação? Entre em contato com o suporte oficial da <b>VR Soluções</b>:</p>
+            <p>Dúvidas na ativação? Entre em contato com o suporte oficial da <b>VRS Soluções</b>:</p>
             <p>📧 <b>vrsolucoes.sistemas@gmail.com</b></p>
         </div>
     """, unsafe_allow_html=True)
