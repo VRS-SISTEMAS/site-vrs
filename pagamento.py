@@ -7,21 +7,19 @@ import mercadopago
 
 def exibir_tela_pagamento(plano, dados_venda):
     """
-    Função principal que integra com o Mercado Pago e exibe o Pix.
+    Função que integra o Checkout Pro do Mercado Pago (Cartão, Boleto e Pix).
     """
     st.markdown(f"### 🚀 Ativando o Plano {plano}")
-    st.write("Estamos gerando o seu código Pix para ativação imediata.")
+    st.write("Clique no botão abaixo para escolher sua forma de pagamento (Cartão, Boleto ou Pix).")
 
-    # 1. Configuração do SDK do Mercado Pago usando seu Secret Token
-    # O token é puxado dos 'Secrets' do Streamlit para sua segurança.
+    # 1. Configuração do SDK do Mercado Pago
     try:
         sdk = mercadopago.SDK(st.secrets["ACCESS_TOKEN_MP"])
     except Exception as e:
         st.error("Erro ao carregar credenciais de pagamento. Verifique os Secrets.")
         return
 
-    # 2. Definição dos valores com base no plano selecionado
-    # Valores conforme definidos na vitrine da VR Soluções.
+    # 2. Definição dos valores conforme os planos da VRS Soluções
     valores = {
         "Básico": 99.99,
         "Júnior": 149.99,
@@ -29,53 +27,55 @@ def exibir_tela_pagamento(plano, dados_venda):
     }
     valor_final = valores.get(plano, 99.99)
 
-    # 3. Criação da requisição de pagamento via Pix
-    payment_data = {
-        "transaction_amount": valor_final,
-        "description": f"Assinatura VR Soluções - Plano {plano}",
-        "payment_method_id": "pix",
-        "payer": {
-            "email": "vrsolucoes.sistemas@gmail.com", # Seu e-mail oficial
-            "first_name": "Cliente",
-            "last_name": "VRS"
-        }
+    # 3. Criação da Preferência de Pagamento (Checkout Pro)
+    # Aqui configuramos o item, o preço e para onde o cliente volta depois.
+    preference_data = {
+        "items": [
+            {
+                "title": f"Assinatura Mensal - Plano {plano}",
+                "quantity": 1,
+                "unit_price": valor_final,
+            }
+        ],
+        "back_urls": {
+            "success": "https://vr-solucoessistemas.streamlit.app/",
+            "failure": "https://vr-solucoessistemas.streamlit.app/",
+            "pending": "https://vr-solucoessistemas.streamlit.app/"
+        },
+        "auto_return": "approved",
     }
 
-    # 4. Execução da chamada à API e armazenamento no estado da sessão
-    if 'qr_code' not in st.session_state:
-        with st.spinner("Comunicando com o Mercado Pago..."):
-            result = sdk.payment().create(payment_data)
+    # 4. Execução da chamada à API e geração do Link de Pagamento
+    if 'link_pagamento' not in st.session_state:
+        with st.spinner("Preparando seu pagamento seguro..."):
+            result = sdk.preference().create(preference_data)
             pagamento = result["response"]
             
-            if "point_of_interaction" in pagamento:
-                st.session_state.qr_code = pagamento["point_of_interaction"]["transaction_data"]["qr_code"]
-                st.session_state.qr_code_base64 = pagamento["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+            if "init_point" in pagamento:
+                # O 'init_point' é o link oficial da tela de pagamento do Mercado Pago
+                st.session_state.link_pagamento = pagamento["init_point"]
             else:
-                st.error("Erro ao gerar o Pix. Tente novamente mais tarde.")
+                st.error("Erro ao gerar a tela de pagamento. Tente novamente mais tarde.")
                 return
 
-    # 5. Exibição da Interface de Pagamento
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-        st.image(f"data:image/png;base64,{st.session_state.qr_code_base64}", caption="Aponte a câmera do celular")
-
-    with col2:
-        st.info("Copia e Cola")
-        st.code(st.session_state.qr_code)
-        st.warning("O acesso será liberado imediatamente após a confirmação do pagamento.")
+    # 5. Interface de Pagamento Profissional
+    st.info("Você será redirecionado para o ambiente seguro do Mercado Pago.")
+    
+    # Criamos um botão que abre o link de pagamento em uma nova aba
+    st.link_button("💳 PAGAR AGORA (Cartão, Boleto ou Pix)", st.session_state.link_pagamento, type="primary", use_container_width=True)
+    
+    st.warning("O acesso será liberado imediatamente após a confirmação do pagamento.")
 
     if st.button("Voltar para a Vitrine"):
-        # Limpa o QR Code para permitir uma nova geração se o usuário mudar de ideia
-        if 'qr_code' in st.session_state:
-            del st.session_state.qr_code
+        # Limpa o estado para permitir novas tentativas
+        if 'link_pagamento' in st.session_state:
+            del st.session_state.link_pagamento
         st.session_state.etapa = "vitrine"
         st.rerun()
 
 def exibir_suporte_footer():
     """
-    Exibe informações de suporte ao final da página de pagamento.
-    Esta função resolve o erro de AttributeError no index.py.
+    Exibe informações de suporte ao final da página.
     """
     st.markdown("---")
     st.markdown(f"""
