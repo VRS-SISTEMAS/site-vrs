@@ -4,7 +4,6 @@
 # =================================================================
 import streamlit as st
 import mercadopago
-import time
 
 def exibir_tela_pagamento(plano, dados_venda):
     """
@@ -42,7 +41,7 @@ def exibir_tela_pagamento(plano, dados_venda):
         }
     }
 
-    # 4. Execução da chamada à API
+    # 4. Execução da chamada à API e armazenamento no estado da sessão
     if 'qr_code' not in st.session_state:
         with st.spinner("Comunicando com o Mercado Pago..."):
             result = sdk.payment().create(payment_data)
@@ -67,7 +66,21 @@ def exibir_tela_pagamento(plano, dados_venda):
         st.warning("O acesso será liberado imediatamente após a confirmação do pagamento.")
 
     if st.button("Voltar para a Vitrine"):
-        # Limpa o estado e volta para a seleção de planos
-        del st.session_state.qr_code
+        # Limpa o QR Code para permitir uma nova geração se o usuário mudar de ideia
+        if 'qr_code' in st.session_state:
+            del st.session_state.qr_code
         st.session_state.etapa = "vitrine"
         st.rerun()
+
+def exibir_suporte_footer():
+    """
+    Exibe informações de suporte ao final da página de pagamento.
+    Esta função resolve o erro de AttributeError no index.py.
+    """
+    st.markdown("---")
+    st.markdown(f"""
+        <div style='text-align: center; color: #888;'>
+            <p>Dúvidas na ativação? Entre em contato com o suporte oficial da <b>VR Soluções</b>:</p>
+            <p>📧 <b>vrsolucoes.sistemas@gmail.com</b></p>
+        </div>
+    """, unsafe_allow_html=True)
