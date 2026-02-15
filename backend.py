@@ -3,16 +3,19 @@
 # MÓDULO: Lógica de Persistência (backend.py)
 # =================================================================
 import sqlite3
+import os
 
 def salvar_ativacao(dados):
     """
-    Recebe o dicionário de dados do site e salva no banco de dados SQLite.
+    Salva os dados de ativação no banco de dados SQLite da VRS Soluções.
     """
     try:
-        conn = sqlite3.connect('vrs_gestao.db')
+        # Define o caminho absoluto para o banco de dados no servidor
+        db_path = os.path.join(os.path.dirname(__file__), 'vrs_gestao.db')
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
-        # Inserindo os dados capturados no formulário do site
+        # Insere os dados garantindo que todos os campos existam
         cursor.execute('''
             INSERT INTO ativacoes (nome, email, telefone, documento, id_maquina, plano)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -20,8 +23,8 @@ def salvar_ativacao(dados):
             dados.get('nome'),
             dados.get('email'),
             dados.get('telefone'),
-            dados.get('documento'), # Adicionado para completar o perfil do cliente
-            dados.get('id'),        # Este é o ID da máquina
+            dados.get('documento'),
+            dados.get('id'),
             dados.get('plano')
         ))
 
@@ -29,5 +32,6 @@ def salvar_ativacao(dados):
         conn.close()
         return True
     except Exception as e:
-        print(f"Erro ao salvar no banco da VRS: {e}")
+        # Mostra o erro exato no log do Streamlit caso falhe
+        print(f"Erro VRS Soluções (Salvar): {e}")
         return False
