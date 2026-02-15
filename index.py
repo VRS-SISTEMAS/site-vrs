@@ -3,30 +3,38 @@
 # MÓDULO: Arquivo Principal (index.py)
 # =================================================================
 import streamlit as st
+import importlib
 import sys
 import os
 
-# Adiciona o diretório atual ao caminho do Python para garantir que os módulos sejam achados
+# Força o Python a ler a pasta atual da VRS Soluções para evitar erros de importação
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Importação dos módulos da VRS Soluções
-# IMPORTANTE: O arquivo no GitHub deve se chamar exatamente 'anuncio.py' (sem acento)
-try:
-    import anuncio
-    import pagamento
-except ModuleNotFoundError as e:
-    st.error(f"❌ Erro de Sistema: O arquivo '{e.name}' não foi encontrado no GitHub.")
-    st.info("💡 Dica: Verifique se os arquivos 'anuncio.py' e 'pagamento.py' estão na pasta principal e sem acentos no nome.")
+# Função para carregar módulos com segurança e evitar o erro KeyError no Streamlit
+def carregar_modulo(nome_modulo):
+    try:
+        module = importlib.import_module(nome_modulo)
+        importlib.reload(module) # Força a atualização do cache para ler mudanças recentes
+        return module
+    except Exception as e:
+        st.error(f"Erro ao carregar {nome_modulo}: {e}")
+        return None
+
+# Carregando os módulos necessários para o funcionamento do site
+anuncio = carregar_modulo("anuncio")
+pagamento = carregar_modulo("pagamento")
+backend = carregar_modulo("backend") # Novo módulo integrado para salvar no banco
+
+# Configuração da Página: Define o nome da marca na aba do navegador
+st.set_page_config(page_title="VRS Soluções", layout="wide", initial_sidebar_state="collapsed")
+
+# Verificação de segurança: O site só carrega se os arquivos vitais estiverem presentes
+if anuncio is None or pagamento is None or backend is None:
+    st.warning("⚠️ Atenção: Módulos críticos da VRS Soluções não foram detectados.")
+    st.info("Verifique se 'anuncio.py', 'pagamento.py' e 'backend.py' estão no GitHub.")
     st.stop()
 
-# Configuração da Página: Nome da marca VRS Soluções no topo do navegador
-st.set_page_config(
-    page_title="VRS Soluções", 
-    layout="wide", 
-    initial_sidebar_state="collapsed"
-)
-
-# Inicialização do Estado da Sessão para navegação entre telas
+# Inicialização do Estado da Sessão (Memória do site durante a navegação)
 if "etapa" not in st.session_state:
     st.session_state.etapa = "vitrine"
 if "plano_selecionado" not in st.session_state:
@@ -34,17 +42,17 @@ if "plano_selecionado" not in st.session_state:
 if "dados_venda" not in st.session_state:
     st.session_state.dados_venda = {}
 
-# --- MENU LATERAL (SIDEBAR) ---
+# --- BARRA LATERAL (SIDEBAR) ---
 with st.sidebar:
     st.markdown("<h2 style='color: #00FF7F;'>VRS Soluções</h2>", unsafe_allow_html=True)
     st.divider()
     
-    # Botão para o usuário voltar ao início (Vitrine)
+    # Botão para o cliente resetar a navegação e voltar ao início
     if st.button("🏠 VOLTAR AO INÍCIO", use_container_width=True):
         st.session_state.etapa = "vitrine"
         st.rerun()
     
-    # Informação de suporte técnico da marca
+    # Informação unificada de suporte oficial
     st.markdown("""
         <div style='background: #111; padding: 15px; border-radius: 10px; border-left: 3px solid #00FF7F;'>
             <p style='color: #888; font-size: 0.8rem; margin: 0;'>SUPORTE TÉCNICO:</p>
@@ -52,18 +60,19 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-# --- SISTEMA DE GESTÃO DE TELAS (NAVEGAÇÃO) ---
+# --- GESTÃO DE TELAS (NAVEGAÇÃO DO USUÁRIO) ---
 
-# TELA 1: Vitrine Publicitária
+# TELA 1: Vitrine de Planos (anuncio.py)
 if st.session_state.etapa == "vitrine":
     anuncio.exibir_vitrine_vrs()
 
-# TELA 2: Formulário de Cadastro e Ativação
+# TELA 2: Formulário de Ativação (Captura de dados do cliente)
 elif st.session_state.etapa == "ativacao":
     esq, centro, dir = st.columns([1, 2, 1])
     with centro:
         st.markdown(f"<h2 style='text-align: center; color: #00FF7F;'>💎 Ativação: {st.session_state.plano_selecionado}</h2>", unsafe_allow_html=True)
         with st.container(border=True):
+            # Campos de entrada de dados
             nome = st.text_input("NOME COMPLETO / RAZÃO SOCIAL:")
             c1, c2 = st.columns(2)
             with c1: email = st.text_input("E-MAIL:")
@@ -72,24 +81,31 @@ elif st.session_state.etapa == "ativacao":
             with c3: doc = st.text_input("CPF OU CNPJ:")
             with c4: id_maquina = st.text_input("ID DA MÁQUINA:")
             
-            st.markdown("<br>", unsafe_allow_html=True)
-            
-            # Botão que leva para o checkout do Mercado Pago
+            # Botão de ação principal: Salva no banco e vai para o pagamento
             if st.button("GERAR PIX PARA PAGAMENTO ⚡", use_container_width=True, type="primary"):
                 if nome and email and id_maquina and telefone:
-                    # Salva os dados para o processo de pagamento
-                    st.session_state.dados_venda = {
-                        "nome": nome, 
-                        "email": email, 
-                        "telefone": telefone, 
-                        "id": id_maquina
+                    # Organiza os dados em um dicionário para o backend
+                    dados_vrs = {
+                        "nome": nome,
+                        "email": email,
+                        "telefone": telefone,
+                        "documento": doc,
+                        "id": id_maquina,
+                        "plano": st.session_state.plano_selecionado
                     }
-                    st.session_state.etapa = "pagamento"
-                    st.rerun()
+                    
+                    # INTEGRAÇÃO COM O BANCO DE DADOS:
+                    # Salva as informações antes de abrir o Mercado Pago
+                    if backend.salvar_ativacao(dados_vrs):
+                        st.session_state.dados_venda = dados_vrs
+                        st.session_state.etapa = "pagamento"
+                        st.rerun()
+                    else:
+                        st.error("❌ Erro ao registrar os dados no sistema VRS Soluções.")
                 else:
-                    st.error("⚠️ Por favor, preencha todos os campos obrigatórios!")
+                    st.error("⚠️ Preencha todos os campos obrigatórios!")
 
-# TELA 3: Tela de Pagamento Final
+# TELA 3: Tela de Checkout (pagamento.py)
 elif st.session_state.etapa == "pagamento":
     pagamento.exibir_tela_pagamento(st.session_state.plano_selecionado, st.session_state.dados_venda)
     pagamento.exibir_suporte_footer()
