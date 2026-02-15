@@ -6,6 +6,7 @@ import streamlit as st
 import importlib
 import sys
 import os
+import requests # Necessário para enviar os dados para o Painel ADM
 
 # Força o Python a ler a pasta atual da VRS Soluções para evitar erros de importação
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -23,7 +24,7 @@ def carregar_modulo(nome_modulo):
 # Carregando os módulos necessários para o funcionamento do site
 anuncio = carregar_modulo("anuncio")
 pagamento = carregar_modulo("pagamento")
-backend = carregar_modulo("backend") # Novo módulo integrado para salvar no banco
+backend = carregar_modulo("backend") 
 
 # Configuração da Página: Define o nome da marca na aba do navegador
 st.set_page_config(page_title="VRS Soluções", layout="wide", initial_sidebar_state="collapsed")
@@ -84,7 +85,7 @@ elif st.session_state.etapa == "ativacao":
             # Botão de ação principal: Salva no banco e vai para o pagamento
             if st.button("GERAR PIX PARA PAGAMENTO ⚡", use_container_width=True, type="primary"):
                 if nome and email and id_maquina and telefone:
-                    # Organiza os dados em um dicionário para o backend
+                    # Organiza os dados em um dicionário para o backend e para o Painel ADM
                     dados_vrs = {
                         "nome": nome,
                         "email": email,
@@ -94,9 +95,16 @@ elif st.session_state.etapa == "ativacao":
                         "plano": st.session_state.plano_selecionado
                     }
                     
-                    # INTEGRAÇÃO COM O BANCO DE DADOS:
-                    # Salva as informações antes de abrir o Mercado Pago
+                    # 1. SALVA NO BANCO DE DADOS LOCAL (backend.py)
                     if backend.salvar_ativacao(dados_vrs):
+                        
+                        # 2. TENTA ENVIAR PARA O PAINEL ADM (admin.py) VIA WEBHOOK
+                        # Nota: Use o seu endereço de IP real ou o domínio do túnel se usar Ngrok
+                        try:
+                            requests.post("http://SEU_IP_OU_DOMINIO:5000/webhook", json=dados_vrs, timeout=3)
+                        except:
+                            pass # Silencia erro se o painel desktop estiver fechado
+
                         st.session_state.dados_venda = dados_vrs
                         st.session_state.etapa = "pagamento"
                         st.rerun()
