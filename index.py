@@ -6,20 +6,27 @@ import streamlit as st
 import sys
 import os
 
-# Força o Python a olhar a pasta atual para evitar o KeyError
-sys.path.append(os.path.dirname(__file__))
+# Adiciona o diretório atual ao caminho do Python para garantir que os módulos sejam achados
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Importação dos módulos da VR Soluções (Nomes sem acento)
+# Importação dos módulos da VRS Soluções
+# IMPORTANTE: O arquivo no GitHub deve se chamar exatamente 'anuncio.py' (sem acento)
 try:
     import anuncio
     import pagamento
-except ImportError as e:
-    st.error(f"Erro ao carregar módulos: {e}. Certifique-se de que os nomes dos arquivos estão sem acento (anuncio.py).")
+except ModuleNotFoundError as e:
+    st.error(f"❌ Erro de Sistema: O arquivo '{e.name}' não foi encontrado no GitHub.")
+    st.info("💡 Dica: Verifique se os arquivos 'anuncio.py' e 'pagamento.py' estão na pasta principal e sem acentos no nome.")
+    st.stop()
 
-# Configuração da Página: Nome correto VRS Soluções no topo
-st.set_page_config(page_title="VRS Soluções", layout="wide", initial_sidebar_state="collapsed")
+# Configuração da Página: Nome da marca VRS Soluções no topo do navegador
+st.set_page_config(
+    page_title="VRS Soluções", 
+    layout="wide", 
+    initial_sidebar_state="collapsed"
+)
 
-# Inicialização do Estado da Sessão para persistência de dados
+# Inicialização do Estado da Sessão para navegação entre telas
 if "etapa" not in st.session_state:
     st.session_state.etapa = "vitrine"
 if "plano_selecionado" not in st.session_state:
@@ -27,17 +34,17 @@ if "plano_selecionado" not in st.session_state:
 if "dados_venda" not in st.session_state:
     st.session_state.dados_venda = {}
 
-# --- BARRA LATERAL (SIDEBAR) ---
+# --- MENU LATERAL (SIDEBAR) ---
 with st.sidebar:
     st.markdown("<h2 style='color: #00FF7F;'>VRS Soluções</h2>", unsafe_allow_html=True)
     st.divider()
     
-    # Botão para resetar a navegação
+    # Botão para o usuário voltar ao início (Vitrine)
     if st.button("🏠 VOLTAR AO INÍCIO", use_container_width=True):
         st.session_state.etapa = "vitrine"
         st.rerun()
     
-    # Informação de suporte oficial unificada
+    # Informação de suporte técnico da marca
     st.markdown("""
         <div style='background: #111; padding: 15px; border-radius: 10px; border-left: 3px solid #00FF7F;'>
             <p style='color: #888; font-size: 0.8rem; margin: 0;'>SUPORTE TÉCNICO:</p>
@@ -45,13 +52,13 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
 
-# --- GESTÃO DE TELAS ---
+# --- SISTEMA DE GESTÃO DE TELAS (NAVEGAÇÃO) ---
 
-# Tela 1: Vitrine de Planos
+# TELA 1: Vitrine Publicitária
 if st.session_state.etapa == "vitrine":
     anuncio.exibir_vitrine_vrs()
 
-# Tela 2: Formulário de Cadastro/Ativação
+# TELA 2: Formulário de Cadastro e Ativação
 elif st.session_state.etapa == "ativacao":
     esq, centro, dir = st.columns([1, 2, 1])
     with centro:
@@ -66,16 +73,23 @@ elif st.session_state.etapa == "ativacao":
             with c4: id_maquina = st.text_input("ID DA MÁQUINA:")
             
             st.markdown("<br>", unsafe_allow_html=True)
+            
+            # Botão que leva para o checkout do Mercado Pago
             if st.button("GERAR PIX PARA PAGAMENTO ⚡", use_container_width=True, type="primary"):
-                # Validação simples de campos
                 if nome and email and id_maquina and telefone:
-                    st.session_state.dados_venda = {"nome": nome, "email": email, "telefone": telefone, "id": id_maquina}
+                    # Salva os dados para o processo de pagamento
+                    st.session_state.dados_venda = {
+                        "nome": nome, 
+                        "email": email, 
+                        "telefone": telefone, 
+                        "id": id_maquina
+                    }
                     st.session_state.etapa = "pagamento"
                     st.rerun()
                 else:
-                    st.error("⚠️ Preencha todos os campos obrigatórios!")
+                    st.error("⚠️ Por favor, preencha todos os campos obrigatórios!")
 
-# Tela 3: Checkout do Mercado Pago
+# TELA 3: Tela de Pagamento Final
 elif st.session_state.etapa == "pagamento":
     pagamento.exibir_tela_pagamento(st.session_state.plano_selecionado, st.session_state.dados_venda)
     pagamento.exibir_suporte_footer()
