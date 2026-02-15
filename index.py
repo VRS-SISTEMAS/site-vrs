@@ -78,7 +78,7 @@ elif st.session_state.etapa == "ativacao":
             # Botão principal: Inicia o processo de registro e pagamento
             if st.button("GERAR PIX PARA PAGAMENTO ⚡", use_container_width=True, type="primary"):
                 if nome and email and id_maquina and telefone:
-                    # Organiza os dados capturados para salvamento e envio
+                    # Organiza os dados capturados
                     dados_vrs = {
                         "nome": nome,
                         "email": email,
@@ -88,17 +88,16 @@ elif st.session_state.etapa == "ativacao":
                         "plano": st.session_state.plano_selecionado
                     }
                     
-                    # 1. Tenta salvar os dados no banco de dados SQLite do servidor
+                    # 1. Salva no banco de dados do servidor
                     if backend.salvar_ativacao(dados_vrs):
                         
                         # 2. ENVIO EM TEMPO REAL PARA O PAINEL ADM (Via Ngrok)
-                        # Este trecho conecta o site diretamente ao seu computador pessoal
                         try:
-                            # Link atualizado conforme sua sessão ativa do Ngrok
                             url_painel = "https://multidentate-presumingly-shauna.ngrok-free.dev/webhook"
-                            requests.post(url_painel, json=dados_vrs, timeout=5)
-                        except Exception as e:
-                            # Silencia erros se o painel estiver fechado ou Ngrok desligado
+                            # Adicionamos um cabeçalho para o Ngrok aceitar a conexão sem avisos
+                            headers = {"ngrok-skip-browser-warning": "true"}
+                            requests.post(url_painel, json=dados_vrs, headers=headers, timeout=10)
+                        except:
                             pass
 
                         st.session_state.dados_venda = dados_vrs
@@ -109,7 +108,7 @@ elif st.session_state.etapa == "ativacao":
                 else:
                     st.error("⚠️ Preencha todos os campos obrigatórios!")
 
-# TELA 3: Tela de Checkout e Instruções de Pagamento (pagamento.py)
+# TELA 3: Tela de Checkout (pagamento.py)
 elif st.session_state.etapa == "pagamento":
     pagamento.exibir_tela_pagamento(st.session_state.plano_selecionado, st.session_state.dados_venda)
     pagamento.exibir_suporte_footer()
