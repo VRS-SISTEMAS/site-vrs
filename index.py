@@ -8,6 +8,23 @@ import sys
 import os
 import requests 
 
+# --- NOVO: SISTEMA DE RASTREAMENTO VRS SOLUÇÕES ---
+def rastrear_visitante(acao):
+    """ Envia um sinal para o Painel ADM (Ngrok) informando entrada ou saída """
+    try:
+        # Link do seu Ngrok atualizado
+        url_ngrok = "https://multidentate-presumingly-shauna.ngrok-free.dev/contador"
+        headers = {"ngrok-skip-browser-warning": "true"}
+        requests.post(url_ngrok, json={"acao": acao}, headers=headers, timeout=2)
+    except:
+        pass
+
+# Dispara o rastreio assim que o site é carregado pela primeira vez na sessão
+if 'visitante_rastreado' not in st.session_state:
+    rastrear_visitante("entrada")
+    st.session_state.visitante_rastreado = True
+# --------------------------------------------------
+
 # Força o Python a ler a pasta atual da VRS Soluções para evitar erros de importação
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -49,7 +66,9 @@ if "dados_venda" not in st.session_state:
 
 # --- BARRA LATERAL (SIDEBAR) ---
 with st.sidebar:
-    st.markdown("<h2 style='color: #00FF7F;'>VRS Soluções</h2>", unsafe_allow_html=True)
+    # Nome no cantinho conforme solicitado
+    st.markdown("<p style='font-size: 10px; color: grey;'>VRS Soluções</p>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #00FF7F;'>Painel VRS</h2>", unsafe_allow_html=True)
     st.divider()
     if st.button("🏠 VOLTAR AO INÍCIO", use_container_width=True):
         st.session_state.etapa = "vitrine"
@@ -94,7 +113,6 @@ elif st.session_state.etapa == "ativacao":
                         # 2. ENVIO EM TEMPO REAL PARA O PAINEL ADM (Via Ngrok)
                         try:
                             url_painel = "https://multidentate-presumingly-shauna.ngrok-free.dev/webhook"
-                            # Adicionamos um cabeçalho para o Ngrok aceitar a conexão sem avisos
                             headers = {"ngrok-skip-browser-warning": "true"}
                             requests.post(url_painel, json=dados_vrs, headers=headers, timeout=10)
                         except:
