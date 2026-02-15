@@ -8,10 +8,10 @@ import sys
 import os
 import requests 
 
-# Força o Python a ler a pasta atual da VRS Soluções
+# Força o Python a ler a pasta atual da VRS Soluções para evitar erros de importação
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Função para carregar módulos com segurança
+# Função para carregar módulos com segurança e evitar erros de cache
 def carregar_modulo(nome_modulo):
     try:
         module = importlib.import_module(nome_modulo)
@@ -21,25 +21,25 @@ def carregar_modulo(nome_modulo):
         st.error(f"Erro ao carregar {nome_modulo}: {e}")
         return None
 
-# Carregando os módulos necessários
+# Carregando os módulos necessários para a operação da VRS Soluções
 anuncio = carregar_modulo("anuncio")
 pagamento = carregar_modulo("pagamento")
 backend = carregar_modulo("backend") 
-bancodedados = carregar_modulo("bancodedados") # Módulo de criação da tabela
+bancodedados = carregar_modulo("bancodedados") 
 
-# --- NOVIDADE: INICIALIZAÇÃO AUTOMÁTICA DO BANCO ---
+# Inicialização automática do banco de dados para garantir que as tabelas existam
 if bancodedados:
     bancodedados.inicializar_banco()
 
-# Configuração da Página
+# Configuração da Página: Define o nome da marca VRS Soluções na aba do navegador
 st.set_page_config(page_title="VRS Soluções", layout="wide", initial_sidebar_state="collapsed")
 
-# Verificação de segurança
+# Verificação de segurança: O site só carrega se os arquivos essenciais estiverem ativos
 if anuncio is None or pagamento is None or backend is None:
     st.warning("⚠️ Atenção: Módulos críticos da VRS Soluções não foram detectados.")
     st.stop()
 
-# Inicialização do Estado da Sessão
+# Inicialização do Estado da Sessão (Memória temporária do site)
 if "etapa" not in st.session_state:
     st.session_state.etapa = "vitrine"
 if "plano_selecionado" not in st.session_state:
@@ -55,10 +55,13 @@ with st.sidebar:
         st.session_state.etapa = "vitrine"
         st.rerun()
 
-# --- GESTÃO DE TELAS ---
+# --- GESTÃO DE TELAS E NAVEGAÇÃO ---
+
+# TELA 1: Vitrine de Planos (anuncio.py)
 if st.session_state.etapa == "vitrine":
     anuncio.exibir_vitrine_vrs()
 
+# TELA 2: Formulário de Ativação (Captura de dados)
 elif st.session_state.etapa == "ativacao":
     esq, centro, dir = st.columns([1, 2, 1])
     with centro:
@@ -72,8 +75,10 @@ elif st.session_state.etapa == "ativacao":
             with c3: doc = st.text_input("CPF OU CNPJ:")
             with c4: id_maquina = st.text_input("ID DA MÁQUINA:")
             
+            # Botão principal: Inicia o processo de registro e pagamento
             if st.button("GERAR PIX PARA PAGAMENTO ⚡", use_container_width=True, type="primary"):
                 if nome and email and id_maquina and telefone:
+                    # Organiza os dados capturados para salvamento e envio
                     dados_vrs = {
                         "nome": nome,
                         "email": email,
@@ -83,12 +88,17 @@ elif st.session_state.etapa == "ativacao":
                         "plano": st.session_state.plano_selecionado
                     }
                     
-                    # Tenta salvar no banco
+                    # 1. Tenta salvar os dados no banco de dados SQLite do servidor
                     if backend.salvar_ativacao(dados_vrs):
-                        # Envia para o seu painel se ele estiver online
+                        
+                        # 2. ENVIO EM TEMPO REAL PARA O PAINEL ADM (Via Ngrok)
+                        # Este trecho conecta o site diretamente ao seu computador pessoal
                         try:
-                            requests.post("http://SEU_IP_AQUI:5000/webhook", json=dados_vrs, timeout=2)
-                        except:
+                            # Link atualizado conforme sua sessão ativa do Ngrok
+                            url_painel = "https://multidentate-presumingly-shauna.ngrok-free.dev/webhook"
+                            requests.post(url_painel, json=dados_vrs, timeout=5)
+                        except Exception as e:
+                            # Silencia erros se o painel estiver fechado ou Ngrok desligado
                             pass
 
                         st.session_state.dados_venda = dados_vrs
@@ -99,6 +109,7 @@ elif st.session_state.etapa == "ativacao":
                 else:
                     st.error("⚠️ Preencha todos os campos obrigatórios!")
 
+# TELA 3: Tela de Checkout e Instruções de Pagamento (pagamento.py)
 elif st.session_state.etapa == "pagamento":
     pagamento.exibir_tela_pagamento(st.session_state.plano_selecionado, st.session_state.dados_venda)
     pagamento.exibir_suporte_footer()
