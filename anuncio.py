@@ -5,6 +5,9 @@
 import streamlit as st
 
 def exibir_vitrine_vrs():
+    """
+    Renderiza a vitrine de planos com interface premium para a VRS Soluções.
+    """
     # Estilos CSS de alto padrão para a vitrine
     st.markdown("""
         <style>
@@ -40,7 +43,7 @@ def exibir_vitrine_vrs():
         </style>
     """, unsafe_allow_html=True)
 
-    # Títulos principais
+    # Identificação da marca no topo
     st.markdown("<h1 class='titulo-vrs'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
     st.markdown("<p class='subtitulo-vrs'>Evolução Digital em Gestão</p>", unsafe_allow_html=True)
 
@@ -51,9 +54,10 @@ def exibir_vitrine_vrs():
         </div>
     """, unsafe_allow_html=True)
 
+    # Definição das colunas para os cards
     col1, col2, col3 = st.columns(3)
 
-    # Lógica de exibição dos Cards (Básico, Júnior e Sênior)
+    # Configuração dos planos disponíveis
     planos = [
         {"nome": "Básico", "preco": "99.99", "suporte": "50 Veículos", "key": "b_vrs", "col": col1, "popular": False},
         {"nome": "Júnior", "preco": "149.99", "suporte": "100 Veículos", "key": "j_vrs", "col": col2, "popular": True},
@@ -66,7 +70,7 @@ def exibir_vitrine_vrs():
             st.markdown(f"""
                 <div class='card-plano {classe_extra}'>
                     <h4 style='color: {"#00FF7F" if p["popular"] else "white"}; margin-bottom: 0;'>Plano {p["nome"]}</h4>
-                    <div class='preco-vrs'>{p["preco"]}</div>
+                    <div class='preco-vrs'>R$ {p["preco"]}</div>
                     <div class='texto-suporte'>Com suporte para {p["suporte"]}</div>
                     <hr style='border-color: #222;'>
                     <div class='lista-recursos'>
@@ -77,13 +81,14 @@ def exibir_vitrine_vrs():
                 </div>
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
-            # Ação do botão: Salva o plano e muda a etapa para ativação
+            
+            # Ação do botão: Inicia o processo de ativação
             if st.button(f"ATIVAR {p['nome'].upper()} 💎", key=p["key"], use_container_width=True):
                 st.session_state.plano_selecionado = p["nome"]
                 st.session_state.etapa = "ativacao"
                 st.rerun()
 
-    # Seção de Benefícios da Elite
+    # Seção informativa de benefícios
     st.markdown("""
         <div class='container-beneficios'>
             <h2 style='color: white; margin-top: 0;'>🚀 Por que a VRS é a escolha da Elite?</h2>
