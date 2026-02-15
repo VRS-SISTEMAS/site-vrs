@@ -12,7 +12,7 @@ import requests
 def rastrear_visitante(acao):
     """ Envia um sinal para o Painel ADM (Ngrok) informando entrada ou saída """
     try:
-        # Link do seu Ngrok atualizado
+        # Link do seu Ngrok atualizado para monitoramento em tempo real
         url_ngrok = "https://multidentate-presumingly-shauna.ngrok-free.dev/contador"
         headers = {"ngrok-skip-browser-warning": "true"}
         requests.post(url_ngrok, json={"acao": acao}, headers=headers, timeout=2)
@@ -70,9 +70,18 @@ with st.sidebar:
     st.markdown("<p style='font-size: 10px; color: grey;'>VRS Soluções</p>", unsafe_allow_html=True)
     st.markdown("<h2 style='color: #00FF7F;'>Painel VRS</h2>", unsafe_allow_html=True)
     st.divider()
+    
+    # Botão de navegação para retornar à vitrine
     if st.button("🏠 VOLTAR AO INÍCIO", use_container_width=True):
         st.session_state.etapa = "vitrine"
         st.rerun()
+
+    # --- REINTEGRADO: BLOCO DE CONTATO OFICIAL ---
+    st.sidebar.markdown("---")
+    with st.sidebar.container(border=True):
+        st.markdown("<p style='text-align: center; font-weight: bold; color: #00FF7F;'>DÚVIDAS OU SUPORTE?</p>", unsafe_allow_html=True)
+        # E-mail corrigido conforme sua orientação [cite: 2026-02-13]
+        st.markdown("<p style='text-align: center; font-size: 14px;'>vrsolucoes.sistemas@gmail.com</p>", unsafe_allow_html=True)
 
 # --- GESTÃO DE TELAS E NAVEGAÇÃO ---
 
