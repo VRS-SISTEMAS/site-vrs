@@ -10,12 +10,13 @@ def exibir_vitrine_vrs():
     """
     Renderiza a vitrine de planos com interface premium e link de download oficial incorporado.
     """
-    # Estilos CSS de alto padrão para a vitrine (Mantendo seu padrão Elite)
+    # Estilos CSS de alto padrão para a vitrine (Mantendo o padrão Elite da VRS Soluções)
     st.markdown("""
         <style>
         .titulo-vrs { text-align: center; color: white; font-size: 3.8rem !important; font-weight: 900; letter-spacing: -1px; margin-bottom: 0px; }
         .subtitulo-vrs { text-align: center; color: #00FF7F; font-size: 1.2rem; font-weight: 300; letter-spacing: 3px; margin-bottom: 30px; text-transform: uppercase; }
         
+        /* Container de destaque para o nome do programa */
         .container-nome-programa {
             background: rgba(0, 255, 127, 0.05);
             border: 1px solid rgba(0, 255, 127, 0.3);
@@ -23,6 +24,7 @@ def exibir_vitrine_vrs():
         }
         .nome-programa { color: #00FF7F; font-size: 2.2rem; font-weight: 800; margin: 0; text-shadow: 0 0 10px rgba(0, 255, 127, 0.5); }
 
+        /* Estilização dos Cards de Planos */
         .card-plano {
             background: linear-gradient(180deg, #111111 0%, #0a0a0a 100%);
             border: 1px solid #222; padding: 30px; border-radius: 25px; 
@@ -36,6 +38,7 @@ def exibir_vitrine_vrs():
         .lista-recursos { text-align: left; color: #ccc; font-size: 0.95rem; line-height: 2; margin-top: 20px; }
         .item-check { color: #00FF7F; font-weight: bold; margin-right: 10px; }
 
+        /* Seção de Benefícios na parte inferior */
         .container-beneficios {
             background: #050505;
             padding: 40px; border-radius: 25px; margin-top: 60px;
@@ -43,7 +46,7 @@ def exibir_vitrine_vrs():
         }
         .beneficio-item { color: #aaa; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; }
         
-        /* Estilo para a seção de download */
+        /* Estilo para a seção de download rápido */
         .download-section {
             background: #1A1D2E; border: 1px dashed #00FF7F;
             padding: 25px; border-radius: 15px; text-align: center; margin-top: 40px;
@@ -51,7 +54,7 @@ def exibir_vitrine_vrs():
         </style>
     """, unsafe_allow_html=True)
 
-    # Identificação da marca no topo
+    # Identificação visual da marca no topo da página
     st.markdown("<h1 class='titulo-vrs'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
     st.markdown("<p class='subtitulo-vrs'>Evolução Digital em Gestão</p>", unsafe_allow_html=True)
 
@@ -62,20 +65,20 @@ def exibir_vitrine_vrs():
         </div>
     """, unsafe_allow_html=True)
 
-    # --- BOTÃO DE DOWNLOAD DIRETO INCORPORADO PELO CEO ---
+    # --- SEÇÃO DE DOWNLOAD DIRETO (Estratégia do CEO) ---
     st.markdown("<div class='download-section'>", unsafe_allow_html=True)
     st.write("### 📥 Já possui uma licença ou quer testar?")
     
-    # Link oficial do Google Drive incorporado conforme solicitado
+    # Link oficial hospedado no Google Drive para o instalador .exe
     url_download = "https://drive.google.com/file/d/1vUmS8hrQGZhR8mdR4PFtkDmZsEEX4jHM/view?usp=sharing" 
     
     st.link_button("🚀 BAIXAR INSTALADOR VRS ELITE", url_download, use_container_width=True)
     st.markdown("</div><br>", unsafe_allow_html=True)
 
-    # Definição das colunas para os cards
+    # Divisão em 3 colunas para os planos comerciais
     col1, col2, col3 = st.columns(3)
 
-    # Configuração dos planos disponíveis
+    # Definição técnica dos planos para renderização dinâmica
     planos = [
         {"nome": "Básico", "preco": "99.99", "suporte": "50 Veículos", "key": "b_vrs", "col": col1, "popular": False},
         {"nome": "Júnior", "preco": "149.99", "suporte": "100 Veículos", "key": "j_vrs", "col": col2, "popular": True},
@@ -84,6 +87,7 @@ def exibir_vitrine_vrs():
 
     for p in planos:
         with p["col"]:
+            # Aplica borda verde se o plano for o "Mais Popular"
             classe_extra = "card-popular" if p["popular"] else ""
             st.markdown(f"""
                 <div class='card-plano {classe_extra}'>
@@ -100,13 +104,13 @@ def exibir_vitrine_vrs():
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Ação do botão: Inicia o processo de ativação
+            # Gatilho de compra: Salva o plano no estado da sessão e muda a etapa
             if st.button(f"COMPRAR {p['nome'].upper()} 💎", key=p["key"], use_container_width=True):
                 st.session_state.plano_selecionado = p["nome"]
-                st.session_state.etapa = "checkout" # Direciona para o pagamento
+                st.session_state.etapa = "checkout" 
                 st.rerun()
 
-    # Seção informativa de benefícios
+    # Rodapé informativo com os benefícios da digitalização VRS
     st.markdown("""
         <div class='container-beneficios'>
             <h2 style='color: white; margin-top: 0;'>🚀 Por que a VRS é a escolha da Elite?</h2>
