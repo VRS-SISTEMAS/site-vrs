@@ -83,7 +83,8 @@ def exibir_tutorial_vrs():
     with c2:
         st.success("💬 **Suporte VIP:** Via WhatsApp (Link disponível no checkout)")
 
-    if st.button("⬅ VOLTAR PARA A VITRINE", use_container_width=True):
+    # Adicionada KEY única para evitar conflito com botões de outras telas
+    if st.button("⬅ VOLTAR PARA A VITRINE", use_container_width=True, key="btn_voltar_vrs_tutorial"):
         st.session_state.etapa = "vitrine"
         st.rerun()
 
