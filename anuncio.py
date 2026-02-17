@@ -60,7 +60,8 @@ def exibir_vitrine_vrs():
                     </div>
                 </div>
             """, unsafe_allow_html=True)
+            # Ao clicar, seta o plano e joga para a tela de ativacao (cadastro)
             if st.button(f"ATIVAR {p['nome'].upper()} ⚡", key=p["key"], use_container_width=True):
                 st.session_state.plano_selecionado = p["nome"]
-                st.session_state.etapa = "ativacao" # Direciona para o formulário no index.py
+                st.session_state.etapa = "ativacao" 
                 st.rerun()
