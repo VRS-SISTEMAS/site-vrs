@@ -1,14 +1,14 @@
 # ==============================================================================
 # NOME DO SISTEMA: VRS SOLUÇÕES - SISTEMAS
 # MÓDULO: Vitrine Publicitária e Checkout MP (anuncio.py)
-# OBJETIVO: Renderizar planos, anúncios e processar pagamentos via Mercado Pago
+# OBJETIVO: Renderizar planos, anúncios completos e processar pagamentos
 # DESENVOLVEDOR: Iara & Vitor
 # ==============================================================================
 import streamlit as st
 import mercadopago
 
 # --- CONFIGURAÇÃO MERCADO PAGO VRS ---
-# O Access Token oficial para as vendas reais
+# O Access Token deve ser o seu oficial para processar as vendas reais
 SDK_MP = mercadopago.SDK("SEU_ACCESS_TOKEN_AQUI")
 
 def criar_preferencia_pagamento(plano, preco, email_cliente, nome_cliente):
@@ -66,6 +66,18 @@ def exibir_vitrine_vrs():
         .preco-vrs { color: #00FF7F; font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
         .item-check { color: #00FF7F; font-weight: bold; margin-right: 10px; }
 
+        .download-section {
+            background: #1A1D2E; border: 1px dashed #00FF7F;
+            padding: 25px; border-radius: 15px; text-align: center; margin-top: 40px;
+        }
+        
+        .container-beneficios {
+            background: #050505;
+            padding: 40px; border-radius: 25px; margin-top: 60px;
+            border: 1px solid #111; border-top: 4px solid #00FF7F;
+        }
+        .beneficio-item { color: #aaa; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; }
+
         .secao-pagamento {
             background: #0a0a0a; border: 2px solid #00FF7F;
             padding: 30px; border-radius: 20px; margin-top: 50px;
@@ -73,19 +85,27 @@ def exibir_vitrine_vrs():
         </style>
     """, unsafe_allow_html=True)
 
+    # Identificação da marca no topo
+    st.markdown("<h1 class='titulo-vrs'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
+    st.markdown("<p class='subtitulo-vrs'>Evolução Digital em Gestão</p>", unsafe_allow_html=True)
+
     if 'etapa' not in st.session_state:
         st.session_state.etapa = "vitrine"
 
     # --- TELA 1: VITRINE E ANÚNCIOS ---
     if st.session_state.etapa == "vitrine":
-        st.markdown("<h1 class='titulo-vrs'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
-        st.markdown("<p class='subtitulo-vrs'>Evolução Digital em Gestão</p>", unsafe_allow_html=True)
-
         st.markdown("""
             <div class='container-nome-programa'>
                 <h2 class='nome-programa'>GERENCIADOR PARA OFICINA</h2>
             </div>
         """, unsafe_allow_html=True)
+
+        # Botão de Download Direto
+        st.markdown("<div class='download-section'>", unsafe_allow_html=True)
+        st.write("### 📥 Já possui uma licença ou quer testar?")
+        url_download = "https://drive.google.com/file/d/1vUmS8hrQGZhR8mdR4PFtkDmZsEEX4jHM/view?usp=sharing" 
+        st.link_button("🚀 BAIXAR INSTALADOR VRS ELITE", url_download, use_container_width=True)
+        st.markdown("</div><br>", unsafe_allow_html=True)
 
         # Anúncio de Impacto solicitado pelo CEO
         st.write("### 🛠️ Controle total da sua manutenção")
@@ -106,8 +126,15 @@ def exibir_vitrine_vrs():
                         <h4 style='color: {"#00FF7F" if p["popular"] else "white"};'>Plano {p["nome"]}</h4>
                         <div class='preco-vrs'>R$ {p["preco"]}</div>
                         <div style='color: #888;'>Suporte para {p["suporte"]}</div>
+                        <hr style='border-color: #222;'>
+                        <div class='lista-recursos'>
+                            <div><span class='item-check'>✔</span> Gestão de Peças & Estoque</div>
+                            <div><span class='item-check'>✔</span> Relatórios Técnicos PDF</div>
+                            <div><span class='item-check'>✔</span> Suporte VRS Chat</div>
+                        </div>
                     </div>
                 """, unsafe_allow_html=True)
+                st.markdown("<br>", unsafe_allow_html=True)
                 
                 if st.button(f"ATIVAR {p['nome'].upper()} ⚡", key=p["key"], use_container_width=True):
                     st.session_state.plano_selecionado = p["nome"]
@@ -115,13 +142,13 @@ def exibir_vitrine_vrs():
                     st.session_state.etapa = "pagamento"
                     st.rerun()
 
-    # --- TELA 2: FORMULÁRIO COM TODOS OS CAMPOS ---
+    # --- TELA 2: FORMULÁRIO COM TODOS OS CAMPOS QUE VOCÊ MANDOU ---
     elif st.session_state.etapa == "pagamento":
         st.markdown("<div class='secao-pagamento'>", unsafe_allow_html=True)
         st.subheader(f"💎 Finalizar Compra: Plano {st.session_state.plano_selecionado}")
         
         with st.form("form_vrs_mp_completo"):
-            # CAMPOS OBRIGATÓRIOS DO CEO
+            # RESTAURAÇÃO TOTAL DOS CAMPOS [cite: 2026-02-16]
             nome = st.text_input("Nome Completo / Razão Social")
             doc = st.text_input("CPF ou CNPJ")
             whatsapp = st.text_input("WhatsApp (DDD + Número)")
@@ -131,18 +158,32 @@ def exibir_vitrine_vrs():
             st.markdown("---")
             if st.form_submit_button("GERAR LINK DE PAGAMENTO 💳"):
                 if nome and doc and whatsapp and email and len(id_maquina) == 8:
+                    # Integração com Mercado Pago usando os dados capturados
                     link_mp = criar_preferencia_pagamento(
                         st.session_state.plano_selecionado, 
                         st.session_state.preco_selecionado, 
                         email,
                         nome
                     )
-                    st.success(f"✅ Cadastro de {nome} realizado! Siga para o pagamento.")
+                    st.success(f"✅ Cadastro de {nome} realizado com sucesso!")
                     st.link_button("🚀 PAGAR AGORA COM PIX/CARTÃO", link_mp, use_container_width=True)
                 else:
-                    st.error("Preencha todos os campos obrigatórios corretamente (Nome, CPF/CNPJ, WhatsApp, E-mail e ID).")
+                    st.error("Preencha todos os campos obrigatórios corretamente (Nome, CPF/CNPJ, WhatsApp, E-mail e ID de 8 dígitos).")
 
         if st.button("⬅ Voltar"):
             st.session_state.etapa = "vitrine"
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
+
+    # Benefícios (Rodapé)
+    st.markdown("""
+        <div class='container-beneficios'>
+            <h2 style='color: white; margin-top: 0;'>🚀 Por que a VRS é a escolha da Elite?</h2>
+            <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px;'>
+                <div class='beneficio-item'><span class='item-check'>✔</span> <b>Zero Papelada:</b> Digitalização total da sua oficina.</div>
+                <div class='beneficio-item'><span class='item-check'>✔</span> <b>Histórico Instantâneo:</b> Tudo sobre o veículo em segundos.</div>
+                <div class='beneficio-item'><span class='item-check'>✔</span> <b>Lucratividade:</b> Controle real de entradas e saídas.</div>
+                <div class='beneficio-item'><span class='item-check'>✔</span> <b>Simplicidade:</b> Feito para quem foca no trabalho, não no PC.</div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
