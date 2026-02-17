@@ -8,6 +8,7 @@ import streamlit as st
 import mercadopago
 
 # --- CONFIGURAÇÃO MERCADO PAGO VRS ---
+# Mantenha o seu Access Token oficial para validar as transações
 SDK_MP = mercadopago.SDK("SEU_ACCESS_TOKEN_AQUI")
 
 def criar_preferencia_pagamento(plano, preco, email_cliente, nome_cliente):
@@ -59,8 +60,8 @@ def exibir_vitrine_vrs():
             border: 1px solid #222; padding: 30px; border-radius: 25px; 
             text-align: center; min-height: 480px; transition: 0.3s;
         }
-        .card-popular { border: 2px solid #00FF7F !important; box-shadow: 0 0 20px rgba(0, 255, 127, 0.2); }
         .card-plano:hover { border-color: #00FF7F; transform: translateY(-5px); }
+        .card-popular { border: 2px solid #00FF7F !important; box-shadow: 0 0 20px rgba(0, 255, 127, 0.2); }
         
         .preco-vrs { color: #00FF7F; font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
         .texto-suporte { color: #888; font-size: 1.1rem; margin-bottom: 20px; line-height: 1.2; }
@@ -109,9 +110,9 @@ def exibir_vitrine_vrs():
         st.link_button("🚀 BAIXAR INSTALADOR VRS ELITE", url_download, use_container_width=True)
         st.markdown("</div><br>", unsafe_allow_html=True)
 
-        # Anúncio de Impacto
+        # Anúncios Restaurados (Padrão CEO)
         st.write("### 🛠️ Controle total da sua manutenção")
-        st.info("Registros Simplificados e sem burocracia. Registro de histórico de manutenção que te leva ao perfeito controle, com estoque inteligente integrado à oficina e relatório de inventário geral.")
+        st.info("Registros Simplificados e sem burocracia. Controle da sua manutenção sem deixar você na mão. Registro de histórico de manutenção que te leva ao perfeito controle, com estoque inteligente integrado à oficina e relatório de inventário geral.")
 
         # Colunas de Planos
         col1, col2, col3 = st.columns(3)
@@ -145,41 +146,35 @@ def exibir_vitrine_vrs():
                     st.session_state.etapa = "pagamento"
                     st.rerun()
 
-    # --- FLUXO DE PAGAMENTO MERCADO PAGO COM CAMPOS COMPLETOS ---
+    # --- FLUXO DE PAGAMENTO COM TODOS OS CAMPOS (RESTAURADO) ---
     elif st.session_state.etapa == "pagamento":
         st.markdown("<div class='secao-pagamento'>", unsafe_allow_html=True)
         st.subheader(f"💎 Finalizar Compra: Plano {st.session_state.plano_selecionado}")
         
-        with st.form("form_vrs_mp"):
-            # RESTAURANDO OS CAMPOS EXIGIDOS PELO CEO [cite: 2026-02-16]
-            nome = st.text_input("Nome Completo / Razão Social")
-            doc = st.text_input("CPF ou CNPJ")
-            whatsapp = st.text_input("WhatsApp (DDD + Número)")
-            email = st.text_input("E-mail para recebimento da chave")
+        with st.form("form_vrs_cadastro_completo"):
+            # CAMPOS FUNDAMENTAIS PARA A GESTÃO VRS
+            nome_cliente = st.text_input("Nome Completo / Razão Social")
+            doc_cliente = st.text_input("CPF ou CNPJ")
+            whatsapp_cliente = st.text_input("WhatsApp (DDD + Número)")
+            email_cliente = st.text_input("E-mail para recebimento da chave")
             id_maquina = st.text_input("ID do seu Sistema (8 dígitos)", max_chars=8)
             
             st.markdown("---")
             if st.form_submit_button("GERAR LINK DE PAGAMENTO 💳"):
-                # Validação de todos os campos essenciais para a VRS Soluções
-                if nome and doc and whatsapp and email and len(id_maquina) == 8:
-                    # Integração real com Mercado Pago usando os dados capturados
-                    link_mp = criar_preferencia_pagamento(
-                        st.session_state.plano_selecionado, 
-                        st.session_state.preco_selecionado, 
-                        email,
-                        nome
-                    )
-                    st.success(f"✅ Cadastro de {nome} realizado com sucesso!")
-                    st.link_button("🚀 PAGAR AGORA COM PIX/CARTÃO", link_mp, use_container_width=True)
+                if nome_cliente and doc_cliente and whatsapp_cliente and email_cliente and len(id_maquina) == 8:
+                    # Gera a preferência real no Mercado Pago
+                    link_mp = criar_preferencia_pagamento(st.session_state.plano_selecionado, st.session_state.preco_selecionado, email_cliente, nome_cliente)
+                    st.success(f"✅ Cadastro de {nome_cliente} realizado! Siga para o pagamento.")
+                    st.link_button("🚀 PAGAR AGORA NO MERCADO PAGO", link_mp, use_container_width=True)
                 else:
-                    st.error("Preencha todos os campos obrigatórios corretamente (Nome, CPF/CNPJ, WhatsApp, E-mail e ID de 8 dígitos).")
+                    st.error("Por favor, preencha todos os campos obrigatórios (Nome, CPF/CNPJ, WhatsApp, E-mail e ID).")
 
         if st.button("⬅ Voltar para Planos"):
             st.session_state.etapa = "vitrine"
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Benefícios (Sempre visíveis no rodapé)
+    # Benefícios (Rodapé)
     st.markdown("""
         <div class='container-beneficios'>
             <h2 style='color: white; margin-top: 0;'>🚀 Por que a VRS é a escolha da Elite?</h2>
