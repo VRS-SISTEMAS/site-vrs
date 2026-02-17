@@ -8,7 +8,7 @@ import streamlit as st
 
 def exibir_vitrine_vrs():
     """
-    Renderiza a vitrine de planos com interface premium e link de download.
+    Renderiza a vitrine de planos com interface premium e link de download oficial incorporado.
     """
     # Estilos CSS de alto padrão para a vitrine (Mantendo seu padrão Elite)
     st.markdown("""
@@ -51,7 +51,7 @@ def exibir_vitrine_vrs():
         </style>
     """, unsafe_allow_html=True)
 
-    # Identificação da marca no topo [cite: 2026-02-07]
+    # Identificação da marca no topo
     st.markdown("<h1 class='titulo-vrs'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
     st.markdown("<p class='subtitulo-vrs'>Evolução Digital em Gestão</p>", unsafe_allow_html=True)
 
@@ -62,18 +62,20 @@ def exibir_vitrine_vrs():
         </div>
     """, unsafe_allow_html=True)
 
-    # --- NOVO: BOTÃO DE DOWNLOAD DIRETO ---
+    # --- BOTÃO DE DOWNLOAD DIRETO INCORPORADO PELO CEO ---
     st.markdown("<div class='download-section'>", unsafe_allow_html=True)
     st.write("### 📥 Já possui uma licença ou quer testar?")
-    # LINK DO GOOGLE DRIVE QUE VOCÊ GEROU
-    url_download = "COLE_AQUI_O_LINK_DO_GOOGLE_DRIVE" 
+    
+    # Link oficial do Google Drive incorporado conforme solicitado
+    url_download = "https://drive.google.com/file/d/1vUmS8hrQGZhR8mdR4PFtkDmZsEEX4jHM/view?usp=sharing" 
+    
     st.link_button("🚀 BAIXAR INSTALADOR VRS ELITE", url_download, use_container_width=True)
     st.markdown("</div><br>", unsafe_allow_html=True)
 
     # Definição das colunas para os cards
     col1, col2, col3 = st.columns(3)
 
-    # Configuração dos planos disponíveis [cite: 2026-02-16]
+    # Configuração dos planos disponíveis
     planos = [
         {"nome": "Básico", "preco": "99.99", "suporte": "50 Veículos", "key": "b_vrs", "col": col1, "popular": False},
         {"nome": "Júnior", "preco": "149.99", "suporte": "100 Veículos", "key": "j_vrs", "col": col2, "popular": True},
@@ -98,7 +100,7 @@ def exibir_vitrine_vrs():
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Ação do botão: Inicia o processo de ativação [cite: 2026-02-16]
+            # Ação do botão: Inicia o processo de ativação
             if st.button(f"COMPRAR {p['nome'].upper()} 💎", key=p["key"], use_container_width=True):
                 st.session_state.plano_selecionado = p["nome"]
                 st.session_state.etapa = "checkout" # Direciona para o pagamento
