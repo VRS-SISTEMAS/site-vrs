@@ -1,14 +1,16 @@
-# =================================================================
-# NOME DO SISTEMA: VRS Soluções
+# ==============================================================================
+# NOME DO SISTEMA: VRS SOLUÇÕES - SISTEMAS
 # MÓDULO: Vitrine Publicitária (anuncio.py)
-# =================================================================
+# OBJETIVO: Renderizar planos e fornecer link de download oficial
+# DESENVOLVEDOR: Iara & Vitor
+# ==============================================================================
 import streamlit as st
 
 def exibir_vitrine_vrs():
     """
-    Renderiza a vitrine de planos com interface premium para a VRS Soluções.
+    Renderiza a vitrine de planos com interface premium e link de download.
     """
-    # Estilos CSS de alto padrão para a vitrine
+    # Estilos CSS de alto padrão para a vitrine (Mantendo seu padrão Elite)
     st.markdown("""
         <style>
         .titulo-vrs { text-align: center; color: white; font-size: 3.8rem !important; font-weight: 900; letter-spacing: -1px; margin-bottom: 0px; }
@@ -40,10 +42,16 @@ def exibir_vitrine_vrs():
             border: 1px solid #111; border-top: 4px solid #00FF7F;
         }
         .beneficio-item { color: #aaa; font-size: 1.1rem; margin-bottom: 15px; display: flex; align-items: center; }
+        
+        /* Estilo para a seção de download */
+        .download-section {
+            background: #1A1D2E; border: 1px dashed #00FF7F;
+            padding: 25px; border-radius: 15px; text-align: center; margin-top: 40px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    # Identificação da marca no topo
+    # Identificação da marca no topo [cite: 2026-02-07]
     st.markdown("<h1 class='titulo-vrs'>VRS SOLUÇÕES</h1>", unsafe_allow_html=True)
     st.markdown("<p class='subtitulo-vrs'>Evolução Digital em Gestão</p>", unsafe_allow_html=True)
 
@@ -54,10 +62,18 @@ def exibir_vitrine_vrs():
         </div>
     """, unsafe_allow_html=True)
 
+    # --- NOVO: BOTÃO DE DOWNLOAD DIRETO ---
+    st.markdown("<div class='download-section'>", unsafe_allow_html=True)
+    st.write("### 📥 Já possui uma licença ou quer testar?")
+    # LINK DO GOOGLE DRIVE QUE VOCÊ GEROU
+    url_download = "COLE_AQUI_O_LINK_DO_GOOGLE_DRIVE" 
+    st.link_button("🚀 BAIXAR INSTALADOR VRS ELITE", url_download, use_container_width=True)
+    st.markdown("</div><br>", unsafe_allow_html=True)
+
     # Definição das colunas para os cards
     col1, col2, col3 = st.columns(3)
 
-    # Configuração dos planos disponíveis
+    # Configuração dos planos disponíveis [cite: 2026-02-16]
     planos = [
         {"nome": "Básico", "preco": "99.99", "suporte": "50 Veículos", "key": "b_vrs", "col": col1, "popular": False},
         {"nome": "Júnior", "preco": "149.99", "suporte": "100 Veículos", "key": "j_vrs", "col": col2, "popular": True},
@@ -82,10 +98,10 @@ def exibir_vitrine_vrs():
             """, unsafe_allow_html=True)
             st.markdown("<br>", unsafe_allow_html=True)
             
-            # Ação do botão: Inicia o processo de ativação
-            if st.button(f"ATIVAR {p['nome'].upper()} 💎", key=p["key"], use_container_width=True):
+            # Ação do botão: Inicia o processo de ativação [cite: 2026-02-16]
+            if st.button(f"COMPRAR {p['nome'].upper()} 💎", key=p["key"], use_container_width=True):
                 st.session_state.plano_selecionado = p["nome"]
-                st.session_state.etapa = "ativacao"
+                st.session_state.etapa = "checkout" # Direciona para o pagamento
                 st.rerun()
 
     # Seção informativa de benefícios
