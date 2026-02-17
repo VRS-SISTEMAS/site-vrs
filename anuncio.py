@@ -10,7 +10,7 @@ import mercadopago
 # --- CONFIGURAÇÃO MERCADO PAGO VRS ---
 SDK_MP = mercadopago.SDK("SEU_ACCESS_TOKEN_AQUI")
 
-def criar_preferencia_pagamento(plano, preco, email_cliente):
+def criar_preferencia_pagamento(plano, preco, email_cliente, nome_cliente):
     """
     Gera o link de pagamento oficial do Mercado Pago para o plano escolhido.
     """
@@ -22,7 +22,10 @@ def criar_preferencia_pagamento(plano, preco, email_cliente):
                 "unit_price": float(preco),
             }
         ],
-        "payer": {"email": email_cliente},
+        "payer": {
+            "name": nome_cliente,
+            "email": email_cliente
+        },
         "back_urls": {
             "success": "https://vrs-solucoes.streamlit.app",
             "failure": "https://vrs-solucoes.streamlit.app",
@@ -56,8 +59,8 @@ def exibir_vitrine_vrs():
             border: 1px solid #222; padding: 30px; border-radius: 25px; 
             text-align: center; min-height: 480px; transition: 0.3s;
         }
-        .card-plano:hover { border-color: #00FF7F; transform: translateY(-5px); }
         .card-popular { border: 2px solid #00FF7F !important; box-shadow: 0 0 20px rgba(0, 255, 127, 0.2); }
+        .card-plano:hover { border-color: #00FF7F; transform: translateY(-5px); }
         
         .preco-vrs { color: #00FF7F; font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
         .texto-suporte { color: #888; font-size: 1.1rem; margin-bottom: 20px; line-height: 1.2; }
@@ -142,30 +145,41 @@ def exibir_vitrine_vrs():
                     st.session_state.etapa = "pagamento"
                     st.rerun()
 
-    # --- FLUXO DE PAGAMENTO MERCADO PAGO ---
+    # --- FLUXO DE PAGAMENTO MERCADO PAGO COM CAMPOS COMPLETOS ---
     elif st.session_state.etapa == "pagamento":
         st.markdown("<div class='secao-pagamento'>", unsafe_allow_html=True)
         st.subheader(f"💎 Finalizar Compra: Plano {st.session_state.plano_selecionado}")
         
         with st.form("form_vrs_mp"):
-            nome = st.text_input("Nome Completo")
+            # RESTAURANDO OS CAMPOS EXIGIDOS PELO CEO [cite: 2026-02-16]
+            nome = st.text_input("Nome Completo / Razão Social")
+            doc = st.text_input("CPF ou CNPJ")
+            whatsapp = st.text_input("WhatsApp (DDD + Número)")
             email = st.text_input("E-mail para recebimento da chave")
             id_maquina = st.text_input("ID do seu Sistema (8 dígitos)", max_chars=8)
             
+            st.markdown("---")
             if st.form_submit_button("GERAR LINK DE PAGAMENTO 💳"):
-                if nome and email and len(id_maquina) == 8:
-                    link_mp = criar_preferencia_pagamento(st.session_state.plano_selecionado, st.session_state.preco_selecionado, email)
-                    st.success("✅ Pedido gerado com sucesso!")
+                # Validação de todos os campos essenciais para a VRS Soluções
+                if nome and doc and whatsapp and email and len(id_maquina) == 8:
+                    # Integração real com Mercado Pago usando os dados capturados
+                    link_mp = criar_preferencia_pagamento(
+                        st.session_state.plano_selecionado, 
+                        st.session_state.preco_selecionado, 
+                        email,
+                        nome
+                    )
+                    st.success(f"✅ Cadastro de {nome} realizado com sucesso!")
                     st.link_button("🚀 PAGAR AGORA COM PIX/CARTÃO", link_mp, use_container_width=True)
                 else:
-                    st.error("Preencha todos os campos corretamente.")
+                    st.error("Preencha todos os campos obrigatórios corretamente (Nome, CPF/CNPJ, WhatsApp, E-mail e ID de 8 dígitos).")
 
         if st.button("⬅ Voltar para Planos"):
             st.session_state.etapa = "vitrine"
             st.rerun()
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # Benefícios
+    # Benefícios (Sempre visíveis no rodapé)
     st.markdown("""
         <div class='container-beneficios'>
             <h2 style='color: white; margin-top: 0;'>🚀 Por que a VRS é a escolha da Elite?</h2>
